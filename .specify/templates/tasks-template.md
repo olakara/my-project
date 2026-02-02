@@ -80,6 +80,7 @@ description: "Task list template for feature implementation"
 - [ ] T003 [P] Configure linting tools (StyleCop, Roslyn analyzers) and code formatting
 - [ ] T004 [P] Configure Serilog structured logging in Program.cs with JSON output and enrichment
 - [ ] T005 [P] Configure EFCore DbContext with appropriate DbSets and conventions
+- [ ] T006 [P] Enable Nullable reference types in .csproj: `<Nullable>enable</Nullable>` with `<WarningsAsErrors>nullable</WarningsAsErrors>`
 
 ---
 
@@ -91,17 +92,23 @@ description: "Task list template for feature implementation"
 
 Examples of foundational tasks (adjust based on your project):
 
-- [ ] T006 [P] Create base Domain entities in `Domain/Shared/` folder (e.g., AggregateRoot base class)
-- [ ] T007 [P] Create EFCore entity configurations in `Data/Configurations/` for all base entities
-- [ ] T008 [P] Create EFCore initial migration and verify DbContext setup (`dotnet ef migrations add InitialCreate`)
-- [ ] T009 [P] Create Repository base class and register repositories in DI (Data/Repositories/)
-- [ ] T010 [P] Implement authentication/authorization framework with DI registration (Principle IV - Security)
-- [ ] T011 [P] Setup Minimal API base extensions for endpoint registration and routing
-- [ ] T012 Create base request/response models and common validators (FluentValidation)
-- [ ] T013 Implement correlation ID middleware for request tracing (Principle V - Serilog logging)
-- [ ] T014 Create exception handling middleware that logs via Serilog with structured context
-- [ ] T015 Configure input validation error handling to return 400 Bad Request with Serilog logging
-- [ ] T016 Configure security scanning and dependency vulnerability checks
+- [ ] T007 [P] Create Global Exception Handling Middleware in `Middleware/GlobalExceptionHandlingMiddleware.cs`
+  - Handle standard exceptions with appropriate HTTP status codes
+  - Log exceptions via Serilog with full context
+  - Return standardized error response format
+- [ ] T008 [P] Implement ApiErrorResponse class for consistent error responses with TraceId
+- [ ] T009 [P] Register Global Exception Handling Middleware in Program.cs before routing
+- [ ] T010 [P] Create base Domain entities in `Domain/Shared/` folder (e.g., AggregateRoot base class with nullable safety)
+- [ ] T011 [P] Create EFCore entity configurations in `Data/Configurations/` for base entities with fluent API
+- [ ] T012 [P] Create EFCore initial migration and verify DbContext setup (`dotnet ef migrations add InitialCreate`)
+- [ ] T013 [P] Create Repository base class and register repositories in DI (Data/Repositories/)
+- [ ] T014 [P] Implement authentication/authorization framework with DI registration (Principle IV - Security)
+- [ ] T015 [P] Setup Minimal API base extensions for endpoint registration and routing
+- [ ] T016 Create base request/response models and common validators (FluentValidation)
+- [ ] T017 Implement correlation ID middleware for request tracing (Principle V - Serilog logging)
+- [ ] T018 Create Global Exception Handler that logs via Serilog with structured context (guardrail enforcement)
+- [ ] T019 Configure input validation error handling to return 400 Bad Request with Serilog logging
+- [ ] T020 Configure security scanning and dependency vulnerability checks
 
 **Checkpoint**: Foundation ready - Vertical Slice feature implementation can now begin in parallel
 
@@ -132,24 +139,43 @@ Examples of foundational tasks (adjust based on your project):
 ### Implementation for User Story 1 (Vertical Slice with Domain, Data, Features)
 
 **Domain Layer**:
-- [ ] T023 [P] [US1] Create Domain entity `Domain/[Story]/[Entity].cs` with business logic and value objects
-- [ ] T024 [P] [US1] Create domain validations and business rules in entity
+- [ ] T023 [P] [US1] Create Domain entity `Domain/[Story]/[Entity].cs` with business logic, value objects, nullable safety
+  - Use explicit `?` annotations for nullable properties
+  - Never null collections/required properties without `?`
+  - Include domain validations
+- [ ] T024 [P] [US1] Create domain validations and business rules in entity (no null reference exceptions)
 
 **Data Layer (EFCore)**:
 - [ ] T025 [P] [US1] Create EFCore entity configuration in `Data/Configurations/[Entity]Configuration.cs` (fluent API)
 - [ ] T026 [P] [US1] Create EFCore migration: `dotnet ef migrations add Add[Entity]` in `Data/Migrations/`
-- [ ] T027 [P] [US1] Create Repository implementation in `Data/Repositories/[Entity]Repository.cs` with async methods
+- [ ] T027 [P] [US1] Create Repository implementation in `Data/Repositories/[Entity]Repository.cs` with **async methods**
+  - ALL repository methods MUST be async: `GetByIdAsync`, `CreateAsync`, `UpdateAsync`, `DeleteAsync`
+  - Use `.ConfigureAwait(false)` in library code
+  - Never use `.Result` or `.Wait()` on tasks
 
 **Features Layer (API)**:
 - [ ] T028 [P] [US1] Create request/response models: `Features/[Story]/[Request].cs` and `[Response].cs`
+  - Use explicit `?` for nullable properties
+  - Non-nullable properties must be initialized or required
 - [ ] T029 [P] [US1] Create `Features/[Story]/[RequestValidator].cs` using FluentValidation (semantic rules)
-- [ ] T030 [P] [US1] Create `Features/[Story]/Services/[Service].cs` with business logic (uses Domain + Repository)
-- [ ] T031 [US1] Create `Features/[Story]/Endpoints/[Endpoint]Endpoint.cs` static class with Minimal API (depends on T023-T030)
+- [ ] T030 [P] [US1] Create `Features/[Story]/Services/[Service].cs` with **async business logic** (uses Domain + Repository)
+  - Service methods MUST be async: `CreateAsync`, `UpdateAsync`, etc.
+  - Inject `ILogger<T>` and use for all operations
+- [ ] T031 [US1] Create `Features/[Story]/Endpoints/[Endpoint]Endpoint.cs` static class with **async Minimal API**
+  - Handler MUST be async: `private static async Task<IResult> Handle(...)`
+  - NO try-catch blocks (Global Exception Handling Middleware handles errors)
+  - Validate requests; let middleware handle exceptions
+  - Use null-safe navigation: `user?.Address?.City`
 - [ ] T032 [US1] Register endpoints and services in Program.cs using extension methods (DI)
 - [ ] T033 [US1] Add structured logging with correlation IDs to all operations (Serilog - Principle V)
+  - Log method entry/exit at Debug level
+  - Log business events at Info level
+  - NEVER log sensitive data
 - [ ] T034 [US1] Run `dotnet test` - verify all tests pass (green state), refactor if needed
+  - Verify no nullable warnings
+  - Verify all async methods tested with proper await patterns
 
-**Checkpoint**: At this point, User Story 1 (complete Vertical Slice from Domain through API) should be fully functional, tested, secure, and observable
+**Checkpoint**: At this point, User Story 1 (complete Vertical Slice from Domain through API) should be fully functional, tested, secure, observable, and async-first with null safety
 
 ---
 
