@@ -18,6 +18,12 @@
   - Tested independently
   - Deployed independently
   - Demonstrated to users independently
+  
+  TESTING NOTE: Acceptance scenarios use Given-When-Then format, which maps directly to
+  the AAA (Arrange-Act-Assert) test pattern required by the project constitution:
+  - Given = Arrange (set up test conditions)
+  - When = Act (execute the behavior)
+  - Then = Assert (verify expected outcomes)
 -->
 
 ### User Story 1 - [Brief Title] (Priority: P1)

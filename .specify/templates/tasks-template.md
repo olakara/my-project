@@ -8,7 +8,14 @@ description: "Task list template for feature implementation"
 **Input**: Design documents from `/specs/[###-feature-name]/`
 **Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
 
-**Tests**: The examples below include test tasks. Tests are OPTIONAL - only include them if explicitly requested in the feature specification.
+**Constitutional Requirements**:
+- **TDD (NON-NEGOTIABLE)**: Tests MUST be written first, fail, then implementation follows
+- **AAA Pattern**: All tests MUST follow Arrange-Act-Assert structure
+- **Security**: Input validation, secure data handling in every user story
+- **Logging**: Structured logging with appropriate levels for all operations
+- **Code Quality**: Single responsibility, clear naming, no duplication
+
+**Tests**: Tests are MANDATORY per constitution Principle I. Write tests FIRST, verify they FAIL, then implement.
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
 
@@ -63,11 +70,13 @@ description: "Task list template for feature implementation"
 Examples of foundational tasks (adjust based on your project):
 
 - [ ] T004 Setup database schema and migrations framework
-- [ ] T005 [P] Implement authentication/authorization framework
+- [ ] T005 [P] Implement authentication/authorization framework (Principle IV - Security)
 - [ ] T006 [P] Setup API routing and middleware structure
 - [ ] T007 Create base models/entities that all stories depend on
-- [ ] T008 Configure error handling and logging infrastructure
-- [ ] T009 Setup environment configuration management
+- [ ] T008 Configure structured logging infrastructure with correlation IDs (Principle V - Observability)
+- [ ] T009 Setup environment configuration management (secure secrets handling per Principle IV)
+- [ ] T010 Configure security scanning and dependency vulnerability checks
+- [ ] T011 Setup input validation framework (Principle IV - Security)
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -79,23 +88,30 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 1 (OPTIONAL - only if tests requested) ⚠️
+### Tests for User Story 1 (MANDATORY per Constitution) ✅
 
-> **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
+> **CONSTITUTIONAL REQUIREMENT (Principle I - TDD)**: 
+> Write these tests FIRST using AAA pattern (Arrange-Act-Assert)
+> Run tests and verify they FAIL before any implementation
+> Commit tests separately or before implementation
 
-- [ ] T010 [P] [US1] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T011 [P] [US1] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T010 [P] [US1] Unit tests for [Entity1] using AAA pattern in tests/unit/test_[entity1].py
+- [ ] T011 [P] [US1] Contract test for [endpoint] in tests/contract/test_[name].py
+- [ ] T012 [P] [US1] Integration test for [user journey] in tests/integration/test_[name].py
+
+**Verification**: Run test suite, confirm all tests FAIL (red state) before proceeding to implementation
 
 ### Implementation for User Story 1
 
-- [ ] T012 [P] [US1] Create [Entity1] model in src/models/[entity1].py
-- [ ] T013 [P] [US1] Create [Entity2] model in src/models/[entity2].py
-- [ ] T014 [US1] Implement [Service] in src/services/[service].py (depends on T012, T013)
-- [ ] T015 [US1] Implement [endpoint/feature] in src/[location]/[file].py
-- [ ] T016 [US1] Add validation and error handling
-- [ ] T017 [US1] Add logging for user story 1 operations
+- [ ] T013 [P] [US1] Create [Entity1] model in src/models/[entity1].py
+- [ ] T014 [P] [US1] Create [Entity2] model in src/models/[entity2].py
+- [ ] T015 [US1] Implement [Service] in src/services/[service].py (depends on T013, T014)
+- [ ] T016 [US1] Implement [endpoint/feature] in src/[location]/[file].py
+- [ ] T017 [US1] Add input validation and secure error handling (Principle IV - Security)
+- [ ] T018 [US1] Add structured logging with correlation IDs (Principle V - Observability)
+- [ ] T019 [US1] Run tests - verify all pass (green state), refactor if needed
 
-**Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
+**Checkpoint**: At this point, User Story 1 should be fully functional, tested, secure, and observable
 
 ---
 

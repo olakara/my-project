@@ -31,7 +31,15 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+This feature MUST comply with all constitutional principles:
+
+- [ ] **I. TDD with AAA Pattern**: Plan includes test-first approach; tests will be written before implementation
+- [ ] **II. Code Quality**: Architecture supports single responsibility; naming conventions documented
+- [ ] **III. Git & Commit Practices**: Feature branch follows `###-feature-name` format; commits will use conventional format
+- [ ] **IV. Security**: Security considerations identified; input validation, data protection planned
+- [ ] **V. Observability & Logging**: Logging strategy defined; structured logging with appropriate levels planned
+
+*Any violations MUST be justified in the Complexity Tracking section below.*
 
 ## Project Structure
 
