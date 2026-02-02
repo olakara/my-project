@@ -16,6 +16,11 @@ description: "Task list template for feature implementation"
 - **Code Quality**: Single responsibility, clear naming, no duplication
 - **Git Commits**: MUST follow format `<type>(<task-id>): <description>` - frequent, small commits per task
 
+**Engineering Guardrails**:
+- **Async/Await First**: ALL I/O operations (EFCore, HTTP, files) MUST use async/await; no blocking calls
+- **Null Safety**: Nullable reference types enabled (`<Nullable>enable</Nullable>`); explicit nullable annotations
+- **Error Handling**: Global Exception Handling Middleware; no try-catch in controllers/endpoints (except business logic)
+
 **Git Commit Standards**:
 - Commit format: `<type>(<task-id>): <description>` where task-id is the task ID from this list (e.g., T001, T015)
 - Types: feat, fix, docs, refactor, test, chore

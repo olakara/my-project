@@ -1,9 +1,9 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version Change: 1.1.1 → 1.1.2
+Version Change: 1.1.2 → 1.2.0
 Created: 2026-02-02, Amended: 2026-02-02
-Bump Rationale: PATCH version - Clarification and refinement of Technology Stack section with EFCore database patterns, Domain/Data folder structure, and Serilog logging framework
+Bump Rationale: MINOR version - Add new Engineering Guardrails section with Asynchronous-First, Null Safety, and Global Error Handling requirements
 
 Principles Defined:
 - I. Test-Driven Development (TDD with AAA Pattern using xUnit) - NON-NEGOTIABLE
@@ -13,22 +13,23 @@ Principles Defined:
 - V. Observability & Logging (Serilog structured logging)
 
 Sections Enhanced:
-- Technology Stack: Added EFCore for ORM, Domain/Data folder organization, Serilog for structured logging
+- Technology Stack: EFCore, Domain/Data folders, Serilog logging
+- NEW: Engineering Guardrails: Async/Await, Nullable reference types, Global exception handling
 
-Modified Components:
-- Database: EFCore with Domain entities and Data contexts
-- Logging: Serilog for structured JSON logging with correlation IDs
-- Project Structure: Added Domain/ and Data/ folders
+New Guardrails:
+1. Asynchronous-First: All I/O-bound operations MUST use async/await
+2. Null Safety: Nullable reference types enabled; explicit nullable annotations
+3. Error Handling: Global Exception Handling Middleware; no try-catch in controllers
 
 Templates Requiring Updates:
-✅ Updated: .specify/templates/plan-template.md - Tech stack check includes EFCore/Serilog
-✅ Updated: .specify/templates/tasks-template.md - EFCore/Serilog setup tasks
-✅ Updated: .specify/templates/spec-template.md - Reference to EFCore/Serilog
+✅ Updated: .specify/templates/plan-template.md - Engineering guardrails checks
+✅ Updated: .specify/templates/tasks-template.md - Async/null safety/error handling tasks
+✅ Updated: .specify/templates/spec-template.md - Reference to engineering guardrails
 
 Follow-up TODOs: None - All requirements defined and propagated
 
 Suggested Commit Message:
-docs(v1.1.2): amend constitution tech stack - add EFCore, Domain/Data folders, Serilog logging
+docs(v1.2.0): add engineering guardrails - async/await, null safety, global error handling
 -->
 
 # my-project Constitution
@@ -485,6 +486,249 @@ tests/
 
 ---
 
+## Engineering Guardrails
+
+These guardrails enforce critical .NET best practices that complement the core principles. Violations MUST be identified and corrected in code review.
+
+### Asynchronous-First Operations
+
+**Rule**: All I/O-bound operations MUST use async/await patterns. Synchronous approaches are ONLY acceptable when async alternatives are unavailable (with documented justification).
+
+**Mandatory Async/Await Patterns**:
+- **Database Operations**: ALL EFCore queries MUST use async methods
+  - `await _context.Users.FirstOrDefaultAsync()`
+  - `await repository.GetByIdAsync(id)`
+  - `await _context.SaveChangesAsync()`
+  - NEVER use: `.FirstOrDefault()`, `.ToList()`, `.SaveChanges()`
+
+- **HTTP Operations**: All external API calls MUST use async HTTP clients
+  - `await _httpClient.GetAsync(url)`
+  - `await _httpClient.PostAsJsonAsync(url, data)`
+  - NEVER use: `WebClient`, synchronous `HttpClient` methods
+
+- **File Operations**: All file I/O MUST use async methods
+  - `await File.ReadAllTextAsync(path)`
+  - `await File.WriteAllTextAsync(path, content)`
+  - NEVER use: `File.ReadAllText()`, `File.WriteAllText()`
+
+- **Method Signatures**: All methods performing I/O operations MUST return `Task` or `Task<T>`
+  - `public async Task<User> GetUserAsync(int id)`
+  - `public async Task SaveChangesAsync()`
+  - NEVER return `void` from async methods (except event handlers)
+
+**ConfigureAwait Pattern**:
+- Use `ConfigureAwait(false)` in library code (avoids context switching)
+- Example: `await _context.Users.FirstOrDefaultAsync().ConfigureAwait(false)`
+- Not required in ASP.NET Core endpoints (where context is already correct)
+
+**Rationale**: Async/await enables efficient resource utilization, allowing the thread pool to handle other requests while waiting for I/O. Synchronous blocking reduces application throughput and can cause thread starvation under load.
+
+**Enforcement**: Code reviews MUST reject any I/O-bound synchronous calls. Linters MUST flag `Result` properties on `Task` and similar anti-patterns. CI/CD MUST fail on detected blocking calls.
+
+### Null Safety with Nullable Reference Types
+
+**Rule**: Nullable reference types MUST be enabled at project level. Reference types MUST be explicitly marked as nullable where applicable. The compiler MUST guide null-safety validation.
+
+**Project Configuration (Mandatory)**:
+Each .csproj file MUST include:
+```xml
+<PropertyGroup>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+</PropertyGroup>
+```
+
+This enables:
+- Non-nullable reference types by default
+- Compiler warnings for potential null reference exceptions
+- Explicit `?` annotation required for nullable types
+
+**Null-Safe Coding Patterns**:
+
+**✅ CORRECT - Nullable Annotation**:
+```csharp
+public User? GetUserById(int id)              // May return null
+public string Name { get; set; } = string.Empty;  // Never null
+public string? Email { get; set; }            // Can be null
+public List<string>? Tags { get; set; }       // Can be null or empty
+
+// Null-checking
+if (user is not null) {                       // Guard clause
+    logger.LogInformation("User: {Name}", user.Name);
+}
+
+// Null coalescing
+var email = user?.Email ?? "unknown@example.com";
+
+// Safe navigation
+var city = user?.Address?.City;
+```
+
+**❌ INCORRECT - Missing Nullable Markers**:
+```csharp
+public User GetUserById(int id)      // Implies never null, but might be!
+public string Email { get; set; }    // Compiler warning if null possible
+public List<string> Tags { get; set; }  // Can be null without marker
+```
+
+**Null Validation at Entry Points**:
+- ALL controller/endpoint parameters MUST be validated for null
+- Use guard clauses or argument validation
+```csharp
+public async Task<IResult> Create(CreateUserRequest? request, IValidator<CreateUserRequest> validator) {
+    if (request is null)
+        return Results.BadRequest("Request required");
+    
+    var validationResult = await validator.ValidateAsync(request);
+    if (!validationResult.IsValid)
+        return Results.BadRequest(validationResult.Errors);
+}
+```
+
+**Null-Safety in Domain Entities**:
+```csharp
+public class User {
+    public int Id { get; set; }
+    public string Email { get; private set; }    // Non-nullable, must be set
+    public string? MiddleName { get; set; }      // Nullable, can be absent
+    public List<Order> Orders { get; } = new();  // Collections never null, initialized
+    
+    public static Result<User> Create(string email, string? middleName) {
+        if (string.IsNullOrWhiteSpace(email))
+            return Result<User>.Failure("Email required");
+        
+        return Result<User>.Success(new User { Email = email, MiddleName = middleName });
+    }
+}
+```
+
+**Compiler Warning Resolution**:
+- NEVER use `#pragma disable` or `null!` force-cast as avoidance
+- Instead, fix the underlying null-safety issue
+- Use `ArgumentNullException.ThrowIfNull(parameter)` for explicit validation
+
+**Rationale**: Nullable reference types shift null-safety from runtime exceptions to compile-time warnings. This eliminates entire categories of `NullReferenceException` bugs. Explicit annotations make intent clear and enable better tooling.
+
+**Enforcement**: Compiler warnings MUST be treated as errors (`<WarningsAsErrors>nullable</WarningsAsErrors>`). Code reviews MUST verify explicit nullable annotations. No `#pragma` suppressions allowed without justification.
+
+### Global Exception Handling Middleware
+
+**Rule**: Implement Global Exception Handling Middleware. Controllers/endpoints MUST NOT contain try-catch blocks except for specific, recoverable business logic. Infrastructure errors (DB, HTTP) MUST be handled globally.
+
+**Global Exception Handler Implementation (Mandatory)**:
+```csharp
+// Middleware/GlobalExceptionHandlingMiddleware.cs
+public class GlobalExceptionHandlingMiddleware {
+    private readonly RequestDelegate _next;
+    private readonly ILogger<GlobalExceptionHandlingMiddleware> _logger;
+
+    public async Task InvokeAsync(HttpContext context) {
+        try {
+            await _next(context);
+        }
+        catch (Exception ex) {
+            _logger.LogError(ex, "Unhandled exception: {Message}", ex.Message);
+            await HandleExceptionAsync(context, ex);
+        }
+    }
+
+    private static Task HandleExceptionAsync(HttpContext context, Exception exception) {
+        context.Response.ContentType = "application/json";
+        
+        var response = new ApiErrorResponse {
+            Message = "An error occurred processing your request",
+            TraceId = context.TraceIdentifier
+        };
+
+        context.Response.StatusCode = exception switch {
+            ValidationException => StatusCodes.Status400BadRequest,
+            KeyNotFoundException => StatusCodes.Status404NotFound,
+            UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
+            _ => StatusCodes.Status500InternalServerError
+        };
+
+        return context.Response.WriteAsJsonAsync(response);
+    }
+}
+```
+
+**Middleware Registration** (in Program.cs):
+```csharp
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+app.MapControllers();
+```
+
+**Exception Types & HTTP Status Mapping**:
+| Exception Type | HTTP Status | Use Case |
+|---|---|---|
+| `ValidationException` | 400 Bad Request | FluentValidation errors |
+| `KeyNotFoundException` | 404 Not Found | Resource not found |
+| `UnauthorizedAccessException` | 401 Unauthorized | Authentication failure |
+| `ForbiddenAccessException` | 403 Forbidden | Authorization failure |
+| `InvalidOperationException` | 409 Conflict | Business rule violation |
+| `Exception` | 500 Internal Server Error | Unexpected errors |
+
+**When to Use Try-Catch (Limited Cases)**:
+
+✅ **ONLY for specific, recoverable business logic**:
+```csharp
+public async Task<bool> DeleteUserAsync(int userId) {
+    try {
+        // Business-specific: attempt deletion, but continue if optional
+        await _auditService.LogDeletionAsync(userId);
+    }
+    catch (AuditServiceException ex) {
+        // Log but don't fail - deletion still proceeds
+        _logger.LogWarning(ex, "Failed to log deletion for user {UserId}", userId);
+    }
+    
+    // Database operation handled by global middleware
+    await _userRepository.DeleteAsync(userId);
+    return true;
+}
+```
+
+**❌ NEVER use try-catch for infrastructure errors**:
+```csharp
+// WRONG: Global middleware handles this
+try {
+    await _context.SaveChangesAsync();
+}
+catch (DbUpdateException ex) {
+    return Results.InternalServerError();
+}
+```
+
+**Error Response Format (Mandatory)**:
+```csharp
+public class ApiErrorResponse {
+    public string Message { get; set; }
+    public string? ErrorCode { get; set; }
+    public Dictionary<string, string[]>? Errors { get; set; }
+    public string TraceId { get; set; }
+}
+```
+
+**Logging in Exception Middleware**:
+- Log FULL exception details at ERROR level (stack trace, inner exceptions)
+- Include request context (path, method, correlation ID)
+- NEVER log sensitive data (passwords, tokens)
+```csharp
+_logger.LogError(
+    ex,
+    "Exception in {Path} {Method}. CorrelationId: {CorrelationId}",
+    context.Request.Path,
+    context.Request.Method,
+    context.TraceIdentifier
+);
+```
+
+**Rationale**: Centralized exception handling ensures consistent error responses, prevents information leakage, and simplifies maintenance. Controllers remain focused on business logic. Serilog logs all exceptions with full context for production debugging.
+
+**Enforcement**: Code reviews MUST reject try-catch blocks in endpoints/controllers (except documented business logic). Linters MUST flag catch blocks catching base `Exception` in endpoints. All unhandled exceptions MUST be logged via Serilog.
+
+---
+
 ## Development Workflow
 
 ### Code Review Process
@@ -553,4 +797,4 @@ All code reviews, architectural decisions, and technical discussions MUST refere
 
 For runtime development guidance and detailed workflows, refer to the command prompt files in `.github/prompts/speckit.*.prompt.md`.
 
-**Version**: 1.1.2 | **Ratified**: 2026-02-02 | **Last Amended**: 2026-02-02
+**Version**: 1.2.0 | **Ratified**: 2026-02-02 | **Last Amended**: 2026-02-02

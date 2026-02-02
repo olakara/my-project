@@ -49,6 +49,11 @@ This feature MUST comply with all constitutional principles and technology requi
 - [ ] **EFCore Database**: Using Entity Framework Core for data access; Domain entities in Domain/, DbContext in Data/
 - [ ] **Serilog Logging**: Structured logging configured with Serilog; correlation IDs for request tracing
 
+**Engineering Guardrails Compliance**:
+- [ ] **Async/Await First**: All I/O-bound operations (DB, HTTP, files) use async/await; no synchronous blocking calls
+- [ ] **Null Safety**: Nullable reference types enabled in .csproj; explicit `?` annotations for nullable types
+- [ ] **Error Handling**: Global Exception Handling Middleware implemented; no try-catch in controllers (except business logic)
+
 *Any violations MUST be justified in the Complexity Tracking section below.*
 
 ## Project Structure

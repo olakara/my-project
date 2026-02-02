@@ -5,7 +5,8 @@
 **Status**: Draft  
 **Input**: User description: "$ARGUMENTS"  
 **Architecture**: Vertical Slice | **Framework**: .NET 10 Web API | **Validation**: FluentValidation  
-**Database**: EFCore | **Logging**: Serilog
+**Database**: EFCore | **Logging**: Serilog  
+**Guardrails**: Async/Await First | Nullable Reference Types | Global Error Handling
 
 **Git Commits**: Use format `<type>(<task-id>): <description>` - see tasks.md for task-ids
 - Types: feat, fix, docs, refactor, test, chore
