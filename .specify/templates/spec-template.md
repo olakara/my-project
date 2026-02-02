@@ -4,7 +4,8 @@
 **Created**: [DATE]  
 **Status**: Draft  
 **Input**: User description: "$ARGUMENTS"  
-**Architecture**: Vertical Slice | **Framework**: .NET 10 Web API | **Validation**: FluentValidation
+**Architecture**: Vertical Slice | **Framework**: .NET 10 Web API | **Validation**: FluentValidation  
+**Database**: EFCore | **Logging**: Serilog
 
 **Git Commits**: Use format `<type>(<task-id>): <description>` - see tasks.md for task-ids
 - Types: feat, fix, docs, refactor, test, chore

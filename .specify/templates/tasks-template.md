@@ -69,11 +69,12 @@ description: "Task list template for feature implementation"
 **Purpose**: Project initialization and basic structure per Technology Stack requirements
 
 - [ ] T001 Create .NET 10 Web API project structure per Vertical Slice Architecture
-  - Create `src/[Project].Api/` with Program.cs, Extensions/, Features/, Common/ folders
-  - Create `tests/[Project].Tests/` and `tests/[Project].IntegrationTests/` projects
-- [ ] T002 [P] Setup .NET 10 dependencies: FluentValidation, Moq, xUnit (for testing)
+  - Create `src/[Project].Api/` with Program.cs, Extensions/, Features/, Domain/, Data/, Common/, Middleware/ folders
+  - Create `tests/[Project].Tests/` and `tests/[Project].IntegrationTests/` projects with matching folder structure
+- [ ] T002 [P] Setup .NET 10 dependencies: FluentValidation, EFCore, EFCore.SqlServer (or relevant DB provider), Serilog, Moq, xUnit
 - [ ] T003 [P] Configure linting tools (StyleCop, Roslyn analyzers) and code formatting
-- [ ] T004 [P] Setup dependency injection in Program.cs with ServiceCollectionExtensions
+- [ ] T004 [P] Configure Serilog structured logging in Program.cs with JSON output and enrichment
+- [ ] T005 [P] Configure EFCore DbContext with appropriate DbSets and conventions
 
 ---
 
@@ -85,14 +86,17 @@ description: "Task list template for feature implementation"
 
 Examples of foundational tasks (adjust based on your project):
 
-- [ ] T005 Setup database context and Entity Framework Core migrations (if needed)
-- [ ] T006 [P] Implement authentication/authorization framework with DI registration (Principle IV - Security)
-- [ ] T007 [P] Setup Minimal API base extensions for endpoint registration
-- [ ] T008 Create base request/response models and common validators (FluentValidation)
-- [ ] T009 Configure structured logging infrastructure (Serilog or similar) with correlation IDs (Principle V)
-- [ ] T010 Setup input validation filter/middleware for request validation (Principle IV - Security)
-- [ ] T011 Configure security scanning and dependency vulnerability checks
-- [ ] T012 Create ValidationException handler for FluentValidation errors (400 Bad Request responses)
+- [ ] T006 [P] Create base Domain entities in `Domain/Shared/` folder (e.g., AggregateRoot base class)
+- [ ] T007 [P] Create EFCore entity configurations in `Data/Configurations/` for all base entities
+- [ ] T008 [P] Create EFCore initial migration and verify DbContext setup (`dotnet ef migrations add InitialCreate`)
+- [ ] T009 [P] Create Repository base class and register repositories in DI (Data/Repositories/)
+- [ ] T010 [P] Implement authentication/authorization framework with DI registration (Principle IV - Security)
+- [ ] T011 [P] Setup Minimal API base extensions for endpoint registration and routing
+- [ ] T012 Create base request/response models and common validators (FluentValidation)
+- [ ] T013 Implement correlation ID middleware for request tracing (Principle V - Serilog logging)
+- [ ] T014 Create exception handling middleware that logs via Serilog with structured context
+- [ ] T015 Configure input validation error handling to return 400 Bad Request with Serilog logging
+- [ ] T016 Configure security scanning and dependency vulnerability checks
 
 **Checkpoint**: Foundation ready - Vertical Slice feature implementation can now begin in parallel
 
@@ -109,26 +113,38 @@ Examples of foundational tasks (adjust based on your project):
 > **CONSTITUTIONAL REQUIREMENT (Principle I - TDD with xUnit)**: 
 > Write these tests FIRST using AAA pattern (Arrange-Act-Assert) in xUnit
 > Run tests and verify they FAIL before any implementation
-> Test project: `[Project].Tests/Features/[Story]/`
+> Test projects: `[Project].Tests/Domain/[Story]/`, `.Tests/Data/[Story]/`, `.Tests/Features/[Story]/`
 
-- [ ] T013 [P] [US1] Create [Entity1]ValidatorTests.cs using xUnit, test FluentValidation rules with AAA pattern
-- [ ] T014 [P] [US1] Create [Service]Tests.cs using xUnit Facts and mocked dependencies (Moq)
-- [ ] T015 [P] [US1] Create [Endpoint]Tests.cs for Minimal API endpoint testing with xUnit
-- [ ] T016 [P] [US1] Create integration tests in IntegrationTests project testing full slice workflow
+- [ ] T017 [P] [US1] Create Domain entity tests in `Tests/Domain/[Story]/[Entity]Tests.cs` - test business logic and validations
+- [ ] T018 [P] [US1] Create Repository tests in `Tests/Data/[Story]/[Entity]RepositoryTests.cs` - test EFCore data access
+- [ ] T019 [P] [US1] Create FluentValidator tests in `Tests/Features/[Story]/[RequestValidator]Tests.cs` with AAA pattern
+- [ ] T020 [P] [US1] Create Service tests in `Tests/Features/[Story]/[Service]Tests.cs` with Moq for dependencies
+- [ ] T021 [P] [US1] Create Endpoint tests in `Tests/Features/[Story]/[Endpoint]EndpointTests.cs` for Minimal API
+- [ ] T022 [P] [US1] Create integration tests in `IntegrationTests/Features/[Story]/` testing full workflow with real DB
 
 **Verification**: Run `dotnet test`, confirm all xUnit tests FAIL (red state) before proceeding to implementation
 
-### Implementation for User Story 1 (Vertical Slice Architecture)
+### Implementation for User Story 1 (Vertical Slice with Domain, Data, Features)
 
-- [ ] T017 [P] [US1] Create `Features/[Story]/[Request].cs` and `[Response].cs` models in src/[Project].Api/
-- [ ] T018 [P] [US1] Create `Features/[Story]/[RequestValidator].cs` using FluentValidation (semantic rules)
-- [ ] T019 [P] [US1] Create `Features/[Story]/[Service].cs` service in DI container
-- [ ] T020 [US1] Create `Features/[Story]/Endpoints/[Endpoint]Endpoint.cs` static class with Minimal API (depends on T017-T019)
-- [ ] T021 [US1] Register endpoints in Program.cs using extension method
-- [ ] T022 [US1] Add structured logging with correlation IDs to all operations (Principle V - Observability)
-- [ ] T023 [US1] Run xUnit tests - verify all pass (green state), refactor if needed
+**Domain Layer**:
+- [ ] T023 [P] [US1] Create Domain entity `Domain/[Story]/[Entity].cs` with business logic and value objects
+- [ ] T024 [P] [US1] Create domain validations and business rules in entity
 
-**Checkpoint**: At this point, User Story 1 (complete Vertical Slice) should be fully functional, tested, secure, and observable
+**Data Layer (EFCore)**:
+- [ ] T025 [P] [US1] Create EFCore entity configuration in `Data/Configurations/[Entity]Configuration.cs` (fluent API)
+- [ ] T026 [P] [US1] Create EFCore migration: `dotnet ef migrations add Add[Entity]` in `Data/Migrations/`
+- [ ] T027 [P] [US1] Create Repository implementation in `Data/Repositories/[Entity]Repository.cs` with async methods
+
+**Features Layer (API)**:
+- [ ] T028 [P] [US1] Create request/response models: `Features/[Story]/[Request].cs` and `[Response].cs`
+- [ ] T029 [P] [US1] Create `Features/[Story]/[RequestValidator].cs` using FluentValidation (semantic rules)
+- [ ] T030 [P] [US1] Create `Features/[Story]/Services/[Service].cs` with business logic (uses Domain + Repository)
+- [ ] T031 [US1] Create `Features/[Story]/Endpoints/[Endpoint]Endpoint.cs` static class with Minimal API (depends on T023-T030)
+- [ ] T032 [US1] Register endpoints and services in Program.cs using extension methods (DI)
+- [ ] T033 [US1] Add structured logging with correlation IDs to all operations (Serilog - Principle V)
+- [ ] T034 [US1] Run `dotnet test` - verify all tests pass (green state), refactor if needed
+
+**Checkpoint**: At this point, User Story 1 (complete Vertical Slice from Domain through API) should be fully functional, tested, secure, and observable
 
 ---
 
@@ -140,8 +156,10 @@ Examples of foundational tasks (adjust based on your project):
 
 ### Tests for User Story 2 (MANDATORY per Constitution) ✅
 
-- [ ] T024 [P] [US2] Create xUnit tests for [Entity] in [Project].Tests/Features/[Story]/
-- [ ] T025 [P] [US2] Create xUnit tests for [Service] with Moq mocks
+- [ ] T035 [P] [US2] Create Domain entity tests in `Tests/Domain/[Story]/[Entity]Tests.cs`
+- [ ] T036 [P] [US2] Create Repository tests in `Tests/Data/[Story]/[Entity]RepositoryTests.cs`
+- [ ] T037 [P] [US2] Create validator and service tests in `Tests/Features/[Story]/`
+- [ ] T038 [P] [US2] Create endpoint and integration tests
 
 ### Implementation for User Story 2
 

@@ -1,32 +1,34 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version Change: 1.1.0 → 1.1.1
+Version Change: 1.1.1 → 1.1.2
 Created: 2026-02-02, Amended: 2026-02-02
-Bump Rationale: PATCH version - Clarification and refinement of Principle III (Git & Commit Practices) with detailed task-based commit format and frequent small commit strategy
+Bump Rationale: PATCH version - Clarification and refinement of Technology Stack section with EFCore database patterns, Domain/Data folder structure, and Serilog logging framework
 
 Principles Defined:
 - I. Test-Driven Development (TDD with AAA Pattern using xUnit) - NON-NEGOTIABLE
 - II. Code Quality Standards
-- III. Git & Commit Practices (ENHANCED) - Task-based commit format, frequent small commits
+- III. Git & Commit Practices (Task-based format)
 - IV. Security-First Development
-- V. Observability & Logging
+- V. Observability & Logging (Serilog structured logging)
 
-Modified Principles:
-- III. Git & Commit Practices: Enhanced with task-based commit format `<type>(<task-id/issue-id>): <description>`
-  - Commit types: feat, fix, docs, refactor, test, chore
-  - Emphasis on frequent, small commits at task/sub-task level
-  - Task-id from tasks.md or GitHub issue-id for traceability
+Sections Enhanced:
+- Technology Stack: Added EFCore for ORM, Domain/Data folder organization, Serilog for structured logging
+
+Modified Components:
+- Database: EFCore with Domain entities and Data contexts
+- Logging: Serilog for structured JSON logging with correlation IDs
+- Project Structure: Added Domain/ and Data/ folders
 
 Templates Requiring Updates:
-✅ Updated: .specify/templates/plan-template.md - Git practices check
-✅ Updated: .specify/templates/tasks-template.md - Commit format guidance
-✅ Updated: .specify/templates/spec-template.md - Reference to commit standards
+✅ Updated: .specify/templates/plan-template.md - Tech stack check includes EFCore/Serilog
+✅ Updated: .specify/templates/tasks-template.md - EFCore/Serilog setup tasks
+✅ Updated: .specify/templates/spec-template.md - Reference to EFCore/Serilog
 
 Follow-up TODOs: None - All requirements defined and propagated
 
 Suggested Commit Message:
-docs: amend constitution to v1.1.1 - enhance git commit practices with task-based format
+docs(v1.1.2): amend constitution tech stack - add EFCore, Domain/Data folders, Serilog logging
 -->
 
 # my-project Constitution
@@ -300,53 +302,186 @@ Closes: GITHUB-15
 - Create custom validators for domain-specific validations
 - Include meaningful error messages for each rule
 
-### Project Structure
+### Database Access & Entities
+
+**EFCore (Entity Framework Core) - Mandatory**:
+- Use **Entity Framework Core** for all database interactions and ORM
+- Never use raw SQL or stored procedures unless absolutely necessary (and justified)
+- Use async/await patterns with `async`/`await` keywords
+- Implement the Repository pattern to abstract data access
+
+**Domain Entities (Mandatory)**:
+- Domain model classes MUST be placed in `Domain/` folder
+- Example: `Domain/Users/User.cs`, `Domain/Products/Product.cs`
+- Domain entities represent core business concepts (Aggregate Roots, Value Objects)
+- Keep domain entities free of infrastructure/persistence concerns
+- Use property initialization with backing fields where needed
+- Include validation logic in domain entities (immutable where possible)
+
+**Data Access & Contexts (Mandatory)**:
+- All EFCore `DbContext` classes MUST be placed in `Data/` folder
+- `Data/YourProjectDbContext.cs` - Main DbContext class
+- `Data/Configurations/` - Entity configurations (fluent API)
+  - Example: `Data/Configurations/UserConfiguration.cs` for User entity mapping
+- `Data/Migrations/` - EFCore-generated migration files
+- `Data/Repositories/` - Repository implementations for data access
+  - Example: `Data/Repositories/UserRepository.cs`
+- DbContext MUST be registered in DI with appropriate lifetime (Scoped for HTTP requests)
+
+**EFCore Standards**:
+- Use fluent API in Configuration classes, not data annotations where possible
+- Implement soft deletes via Shadow properties for audit trails (IsDeleted)
+- Use value converters for domain-driven design patterns
+- Leverage EFCore's change tracking for audit/logging
+- Configure appropriate cascade delete behaviors
+
+**Rationale**: EFCore provides type-safe, LINQ-based database access with async support. Separating Domain and Data folders enforces clear separation of concerns. Domain entities focus on business logic; Data layer handles persistence mechanics.
+
+### Logging & Observability
+
+**Serilog (Structured Logging) - Mandatory**:
+- Use **Serilog** for all structured logging throughout the application
+- Configure in `Program.cs` with appropriate sinks (Console, File, Cloud services)
+- Serilog MUST output structured logs in JSON format for production environments
+- Use `.UseSerilog()` in `WebApplicationBuilder` configuration
+
+**Serilog Configuration (Mandatory)**:
+```csharp
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .Enrich.FromLogContext()          // Enable context enrichment
+    .Enrich.WithProperty("Environment", environment)
+    .Enrich.WithProperty("Application", "YourProjectName")
+    .WriteTo.Console(outputTemplate:  // Structured JSON in production
+        "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+    .CreateLogger();
+```
+
+**Logging in Features & Services (Mandatory)**:
+- Inject `ILogger<T>` via dependency injection in all services
+- Log at appropriate levels:
+  - **Error**: Use `logger.LogError()` for exceptions and failures
+  - **Warning**: Use `logger.LogWarning()` for unusual but handled conditions
+  - **Information**: Use `logger.LogInformation()` for business events (user actions, state changes)
+  - **Debug**: Use `logger.LogDebug()` for technical troubleshooting
+- Include structured data with log messages:
+  ```csharp
+  logger.LogInformation("User {UserId} registered with email {Email}", userId, email);
+  ```
+- NEVER log sensitive data (passwords, tokens, API keys, PII)
+
+**Correlation IDs & Request Tracking (Mandatory)**:
+- Implement correlation ID middleware to track requests across services
+- Add correlation ID to `LogContext` for all subsequent logs in the request
+- Example middleware:
+  ```csharp
+  app.Use(async (context, next) => {
+      var correlationId = context.Request.Headers["X-Correlation-ID"].FirstOrDefault() 
+          ?? Guid.NewGuid().ToString();
+      using (LogContext.PushProperty("CorrelationId", correlationId)) {
+          await next.Invoke();
+      }
+  });
+  ```
+- All logs in a request MUST include the correlation ID for traceability
+
+**Performance & Diagnostics Logging**:
+- Log method entry/exit for critical operations at Debug level
+- Measure and log execution time for data access operations
+- Log external service calls (duration, status code, errors)
+- Example:
+  ```csharp
+  var stopwatch = Stopwatch.StartNew();
+  var user = await userRepository.GetByIdAsync(userId);
+  stopwatch.Stop();
+  logger.LogInformation("Retrieved user {UserId} in {ElapsedMs}ms", userId, stopwatch.ElapsedMilliseconds);
+  ```
+
+**Rationale**: Serilog provides industry-standard structured logging with rich enrichment. JSON-formatted logs enable machine parsing, centralized logging, and analytics. Correlation IDs bridge distributed traces. Structured data enables powerful filtering and alerting.
+
+### Project Structure (Updated)
 
 ```text
 src/
 ├── YourProject.Api/
-│   ├── Program.cs                      # Entry point, DI setup
+│   ├── Program.cs                      # Entry point, DI setup, Serilog config
 │   ├── Extensions/
 │   │   ├── ServiceCollectionExtensions.cs
 │   │   └── ApplicationBuilderExtensions.cs
-│   ├── Features/
+│   ├── Domain/                         # Domain models (business entities)
+│   │   ├── Users/
+│   │   │   ├── User.cs                 # Domain entity
+│   │   │   ├── UserId.cs               # Value Object
+│   │   │   └── UserEvents.cs           # Domain events (if using)
+│   │   ├── Products/
+│   │   │   └── Product.cs
+│   │   └── Shared/
+│   │       └── AggregateRoot.cs        # Base class for entities
+│   ├── Data/                           # Data access layer (EFCore)
+│   │   ├── YourProjectDbContext.cs     # DbContext
+│   │   ├── Configurations/             # EFCore fluent API configs
+│   │   │   ├── UserConfiguration.cs
+│   │   │   └── ProductConfiguration.cs
+│   │   ├── Repositories/               # Repository pattern implementations
+│   │   │   ├── UserRepository.cs
+│   │   │   └── ProductRepository.cs
+│   │   └── Migrations/                 # EFCore migrations (auto-generated)
+│   │       ├── 20260202_InitialCreate.cs
+│   │       └── YourProjectDbContextModelSnapshot.cs
+│   ├── Features/                       # Vertical slices (Endpoints)
 │   │   ├── Users/
 │   │   │   ├── GetUser/
 │   │   │   │   ├── GetUserRequest.cs
 │   │   │   │   ├── GetUserResponse.cs
-│   │   │   │   ├── GetUserEndpoint.cs        # Minimal API endpoint
-│   │   │   │   └── GetUserValidator.cs       # FluentValidation
+│   │   │   │   ├── GetUserEndpoint.cs
+│   │   │   │   └── GetUserValidator.cs
 │   │   │   ├── CreateUser/
 │   │   │   │   ├── CreateUserRequest.cs
 │   │   │   │   ├── CreateUserResponse.cs
 │   │   │   │   ├── CreateUserEndpoint.cs
 │   │   │   │   └── CreateUserValidator.cs
 │   │   │   └── Services/
-│   │   │       └── UserService.cs            # Shared by slice
+│   │   │       └── UserService.cs      # Business logic
 │   │   └── Products/
 │   │       └── [similar structure]
-│   └── Common/
-│       ├── Filters/
-│       ├── Exceptions/
-│       └── Utilities/
+│   ├── Middleware/                     # HTTP middleware
+│   │   └── CorrelationIdMiddleware.cs  # Correlation ID for request tracing
+│   ├── Common/
+│   │   ├── Filters/
+│   │   ├── Exceptions/
+│   │   └── Utilities/
+│   └── appsettings.json                # Serilog configuration
 │
 tests/
 ├── YourProject.Tests/                  # Unit tests
 │   ├── Features/
 │   │   ├── Users/
 │   │   │   ├── GetUserEndpointTests.cs
-│   │   │   └── UserServiceTests.cs
+│   │   │   ├── UserServiceTests.cs
+│   │   │   └── CreateUserValidatorTests.cs
 │   │   └── Common/
-│   │
-│   └── YourProject.IntegrationTests/   # Integration tests
-        └── Features/
-            └── Users/
-                └── CreateUserIntegrationTests.cs
+│   ├── Domain/
+│   │   ├── Users/
+│   │   │   └── UserTests.cs            # Domain entity tests
+│   │   └── Products/
+│   │       └── ProductTests.cs
+│   └── Data/
+│       ├── Users/
+│       │   └── UserRepositoryTests.cs
+│       └── Products/
+│           └── ProductRepositoryTests.cs
+│
+└── YourProject.IntegrationTests/       # Integration tests
+    ├── Features/
+    │   ├── Users/
+    │   │   ├── CreateUserIntegrationTests.cs
+    │   │   └── GetUserIntegrationTests.cs
+    │   └── Products/
+    └── Data/
+        └── [EFCore integration tests]
 ```
 
-**Rationale**: .NET 10 is the latest stable LTS release with modern async patterns and performance improvements. Vertical Slice Architecture reduces coupling and accelerates feature development. Minimal APIs with static classes provide lightweight, clean endpoint definitions. FluentValidation offers fluent, maintainable validation rules. Dependency injection enables testability and loose coupling.
-
-**Enforcement**: Architectural violations MUST be identified in code reviews. New features MUST follow the Vertical Slice structure. All validators MUST use FluentValidation. Endpoints MUST be organized in static classes.
+**Rationale**: Layered structure with Domain (entities) and Data (access) provides clear separation. Domain focuses on business rules; Data handles persistence. This enables testing domain logic independently from infrastructure. Serilog enrichment with application context improves observability.
 
 ---
 
@@ -418,4 +553,4 @@ All code reviews, architectural decisions, and technical discussions MUST refere
 
 For runtime development guidance and detailed workflows, refer to the command prompt files in `.github/prompts/speckit.*.prompt.md`.
 
-**Version**: 1.1.1 | **Ratified**: 2026-02-02 | **Last Amended**: 2026-02-02
+**Version**: 1.1.2 | **Ratified**: 2026-02-02 | **Last Amended**: 2026-02-02

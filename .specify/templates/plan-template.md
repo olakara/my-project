@@ -46,6 +46,8 @@ This feature MUST comply with all constitutional principles and technology requi
 - [ ] **FluentValidation**: All request models have associated validators
 - [ ] **Dependency Injection**: Services registered in centralized extension method; constructor injection only
 - [ ] **RESTful API**: Endpoints follow REST principles with appropriate HTTP methods and status codes
+- [ ] **EFCore Database**: Using Entity Framework Core for data access; Domain entities in Domain/, DbContext in Data/
+- [ ] **Serilog Logging**: Structured logging configured with Serilog; correlation IDs for request tracing
 
 *Any violations MUST be justified in the Complexity Tracking section below.*
 
