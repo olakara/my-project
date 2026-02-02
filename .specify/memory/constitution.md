@@ -1,33 +1,39 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version Change: TEMPLATE → 1.0.0
-Created: 2026-02-02
-Bump Rationale: Initial constitution establishing core project governance and engineering principles
+Version Change: 1.0.0 → 1.1.0
+Created: 2026-02-02, Amended: 2026-02-02
+Bump Rationale: MINOR version - Add Technology Stack section with .NET 10 Web API, FluentValidation, Vertical Slice architecture requirements; enhance TDD principle with xUnit specifics
 
 Principles Defined:
-- I. Test-Driven Development (TDD with AAA Pattern) - NON-NEGOTIABLE
+- I. Test-Driven Development (TDD with AAA Pattern using xUnit) - NON-NEGOTIABLE
 - II. Code Quality Standards
 - III. Git & Commit Practices
 - IV. Security-First Development
 - V. Observability & Logging
 
-Templates Requiring Updates:
-✅ Updated: .specify/templates/plan-template.md - Constitution Check section aligned
-✅ Updated: .specify/templates/spec-template.md - Acceptance criteria align with TDD/AAA
-✅ Updated: .specify/templates/tasks-template.md - Test-first task ordering, security/logging tasks
+Sections Added:
+- Technology Stack: .NET 10, FluentValidation, Vertical Slice, Minimal API, DI, RESTful
 
-Follow-up TODOs: None - All core principles defined and propagated
+Modified Principles:
+- I. TDD: Enhanced with xUnit framework and C# testing patterns
+
+Templates Requiring Updates:
+✅ Updated: .specify/templates/plan-template.md - Constitution Check includes tech stack
+✅ Updated: .specify/templates/spec-template.md - Aligned with tech stack
+✅ Updated: .specify/templates/tasks-template.md - Tech stack tasks added to foundational phase
+
+Follow-up TODOs: None - All requirements defined and propagated
 
 Suggested Commit Message:
-docs: establish constitution v1.0.0 with TDD, code quality, git, security & logging principles
+docs: amend constitution to v1.1.0 - add .NET 10 tech stack and xUnit testing requirements
 -->
 
 # my-project Constitution
 
 ## Core Principles
 
-### I. Test-Driven Development (TDD with AAA Pattern) - NON-NEGOTIABLE
+### I. Test-Driven Development (TDD with AAA Pattern using xUnit) - NON-NEGOTIABLE
 
 **Rule**: All production code MUST be preceded by failing tests. No implementation before tests exist and fail.
 
@@ -38,15 +44,28 @@ docs: establish constitution v1.0.0 with TDD, code quality, git, security & logg
 4. Refactor while keeping tests green
 5. Commit only when tests pass
 
+**Testing Framework (Mandatory)**:
+- **Unit & Integration Tests**: xUnit framework MUST be used for all test projects
+- Project naming convention: `[Feature].Tests` for unit tests, `[Feature].IntegrationTests` for integration tests
+- xUnit Facts for single test cases, Theories with InlineData for parameterized tests
+- Use xUnit's Fixtures for shared test setup and IDisposable for cleanup
+
 **AAA Pattern (Mandatory)**:
 Every test MUST follow the Arrange-Act-Assert structure:
-- **Arrange**: Set up test data, mocks, and preconditions
+- **Arrange**: Set up test data, mocks, and preconditions (use builders or factories)
 - **Act**: Execute the behavior being tested (single action)
-- **Assert**: Verify expected outcomes and side effects
+- **Assert**: Verify expected outcomes using xUnit's Assert class methods
 
-**Rationale**: TDD with AAA ensures testable design, prevents regressions, and creates living documentation. The AAA pattern enforces clear, maintainable tests with single responsibilities.
+**C# Testing Standards**:
+- Test method names MUST be descriptive: `[MethodName]_[Scenario]_[ExpectedResult]`
+- Use xUnit's `Assert.Throws<T>` or `Assert.ThrowsAsync<T>` for exception testing
+- Use `IFixture` (xUnit fixture) for dependency injection in tests
+- Mock external dependencies using Moq or similar frameworks
+- Aim for 80%+ code coverage (excluding trivial getters/setters)
 
-**Enforcement**: Code reviews MUST reject any production code lacking corresponding tests written first. Test commits MUST be separate from or precede implementation commits.
+**Rationale**: TDD with AAA ensures testable design, prevents regressions, and creates living documentation. xUnit provides a modern, flexible testing framework aligned with .NET best practices. The AAA pattern enforces clear, maintainable tests with single responsibilities.
+
+**Enforcement**: Code reviews MUST reject any production code lacking corresponding xUnit tests written first. Test commits MUST be separate from or precede implementation commits. CI/CD MUST run all xUnit tests and fail on low coverage.
 
 ---
 
@@ -168,6 +187,99 @@ Every test MUST follow the Arrange-Act-Assert structure:
 
 ---
 
+## Technology Stack
+
+### Architecture & Framework
+
+**Web Framework (Mandatory)**:
+- Application MUST be built with **.NET 10 Web API**
+- Use **Minimal APIs** with static classes for endpoint organization
+- Each endpoint group MUST be organized in separate static classes within an `Endpoints` folder structure
+- Implement **Vertical Slice Architecture** for feature organization
+  - Each feature folder contains: models, services, endpoints, validators, and tests
+  - Example: `Features/Users/GetUser/` contains all related classes for that specific operation
+  - Dependencies flow inward; no cross-slice dependencies without service abstraction
+
+**Dependency Injection (Mandatory)**:
+- Use .NET's built-in dependency injection container (Microsoft.Extensions.DependencyInjection)
+- All services MUST be registered in a centralized extension method (e.g., `ServiceCollectionExtensions`)
+- Constructor injection MUST be used; never use service locator pattern
+- Register with appropriate lifetime: Singleton, Scoped (default for HTTP requests), or Transient
+
+**API Style (Mandatory)**:
+- Build **RESTful APIs** following REST principles
+- HTTP methods MUST be used correctly: GET (read), POST (create), PUT (full update), PATCH (partial update), DELETE (delete)
+- Use appropriate HTTP status codes: 200 (OK), 201 (Created), 400 (Bad Request), 404 (Not Found), 500 (Server Error)
+- Use consistent naming conventions for endpoints: `/api/v1/[resource]` pattern
+- Request/response bodies MUST use JSON format
+
+### Validation
+
+**Input Validation (Mandatory)**:
+- Use **FluentValidation** for all input validation
+- Create validators for each request/command model (e.g., `CreateUserValidator`)
+- Validators MUST be registered in the dependency injection container
+- Use validation in minimal API endpoints via ValidationFilter or direct validator call
+- Never allow unvalidated input to reach business logic
+- Validation errors MUST return 400 Bad Request with detailed error messages
+
+**FluentValidation Standards**:
+- One validator class per request/command model
+- Use semantic validation rules: `RuleFor(x => x.Email).EmailAddress()`, `RuleFor(x => x.Age).GreaterThan(0)`
+- Combine multiple rules using chaining and collections
+- Create custom validators for domain-specific validations
+- Include meaningful error messages for each rule
+
+### Project Structure
+
+```text
+src/
+├── YourProject.Api/
+│   ├── Program.cs                      # Entry point, DI setup
+│   ├── Extensions/
+│   │   ├── ServiceCollectionExtensions.cs
+│   │   └── ApplicationBuilderExtensions.cs
+│   ├── Features/
+│   │   ├── Users/
+│   │   │   ├── GetUser/
+│   │   │   │   ├── GetUserRequest.cs
+│   │   │   │   ├── GetUserResponse.cs
+│   │   │   │   ├── GetUserEndpoint.cs        # Minimal API endpoint
+│   │   │   │   └── GetUserValidator.cs       # FluentValidation
+│   │   │   ├── CreateUser/
+│   │   │   │   ├── CreateUserRequest.cs
+│   │   │   │   ├── CreateUserResponse.cs
+│   │   │   │   ├── CreateUserEndpoint.cs
+│   │   │   │   └── CreateUserValidator.cs
+│   │   │   └── Services/
+│   │   │       └── UserService.cs            # Shared by slice
+│   │   └── Products/
+│   │       └── [similar structure]
+│   └── Common/
+│       ├── Filters/
+│       ├── Exceptions/
+│       └── Utilities/
+│
+tests/
+├── YourProject.Tests/                  # Unit tests
+│   ├── Features/
+│   │   ├── Users/
+│   │   │   ├── GetUserEndpointTests.cs
+│   │   │   └── UserServiceTests.cs
+│   │   └── Common/
+│   │
+│   └── YourProject.IntegrationTests/   # Integration tests
+        └── Features/
+            └── Users/
+                └── CreateUserIntegrationTests.cs
+```
+
+**Rationale**: .NET 10 is the latest stable LTS release with modern async patterns and performance improvements. Vertical Slice Architecture reduces coupling and accelerates feature development. Minimal APIs with static classes provide lightweight, clean endpoint definitions. FluentValidation offers fluent, maintainable validation rules. Dependency injection enables testability and loose coupling.
+
+**Enforcement**: Architectural violations MUST be identified in code reviews. New features MUST follow the Vertical Slice structure. All validators MUST use FluentValidation. Endpoints MUST be organized in static classes.
+
+---
+
 ## Development Workflow
 
 ### Code Review Process
@@ -236,4 +348,4 @@ All code reviews, architectural decisions, and technical discussions MUST refere
 
 For runtime development guidance and detailed workflows, refer to the command prompt files in `.github/prompts/speckit.*.prompt.md`.
 
-**Version**: 1.0.0 | **Ratified**: 2026-02-02 | **Last Amended**: 2026-02-02
+**Version**: 1.1.0 | **Ratified**: 2026-02-02 | **Last Amended**: 2026-02-02

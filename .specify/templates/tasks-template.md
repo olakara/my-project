@@ -53,11 +53,14 @@ description: "Task list template for feature implementation"
 
 ## Phase 1: Setup (Shared Infrastructure)
 
-**Purpose**: Project initialization and basic structure
+**Purpose**: Project initialization and basic structure per Technology Stack requirements
 
-- [ ] T001 Create project structure per implementation plan
-- [ ] T002 Initialize [language] project with [framework] dependencies
-- [ ] T003 [P] Configure linting and formatting tools
+- [ ] T001 Create .NET 10 Web API project structure per Vertical Slice Architecture
+  - Create `src/[Project].Api/` with Program.cs, Extensions/, Features/, Common/ folders
+  - Create `tests/[Project].Tests/` and `tests/[Project].IntegrationTests/` projects
+- [ ] T002 [P] Setup .NET 10 dependencies: FluentValidation, Moq, xUnit (for testing)
+- [ ] T003 [P] Configure linting tools (StyleCop, Roslyn analyzers) and code formatting
+- [ ] T004 [P] Setup dependency injection in Program.cs with ServiceCollectionExtensions
 
 ---
 
@@ -69,16 +72,16 @@ description: "Task list template for feature implementation"
 
 Examples of foundational tasks (adjust based on your project):
 
-- [ ] T004 Setup database schema and migrations framework
-- [ ] T005 [P] Implement authentication/authorization framework (Principle IV - Security)
-- [ ] T006 [P] Setup API routing and middleware structure
-- [ ] T007 Create base models/entities that all stories depend on
-- [ ] T008 Configure structured logging infrastructure with correlation IDs (Principle V - Observability)
-- [ ] T009 Setup environment configuration management (secure secrets handling per Principle IV)
-- [ ] T010 Configure security scanning and dependency vulnerability checks
-- [ ] T011 Setup input validation framework (Principle IV - Security)
+- [ ] T005 Setup database context and Entity Framework Core migrations (if needed)
+- [ ] T006 [P] Implement authentication/authorization framework with DI registration (Principle IV - Security)
+- [ ] T007 [P] Setup Minimal API base extensions for endpoint registration
+- [ ] T008 Create base request/response models and common validators (FluentValidation)
+- [ ] T009 Configure structured logging infrastructure (Serilog or similar) with correlation IDs (Principle V)
+- [ ] T010 Setup input validation filter/middleware for request validation (Principle IV - Security)
+- [ ] T011 Configure security scanning and dependency vulnerability checks
+- [ ] T012 Create ValidationException handler for FluentValidation errors (400 Bad Request responses)
 
-**Checkpoint**: Foundation ready - user story implementation can now begin in parallel
+**Checkpoint**: Foundation ready - Vertical Slice feature implementation can now begin in parallel
 
 ---
 
@@ -90,28 +93,29 @@ Examples of foundational tasks (adjust based on your project):
 
 ### Tests for User Story 1 (MANDATORY per Constitution) ✅
 
-> **CONSTITUTIONAL REQUIREMENT (Principle I - TDD)**: 
-> Write these tests FIRST using AAA pattern (Arrange-Act-Assert)
+> **CONSTITUTIONAL REQUIREMENT (Principle I - TDD with xUnit)**: 
+> Write these tests FIRST using AAA pattern (Arrange-Act-Assert) in xUnit
 > Run tests and verify they FAIL before any implementation
-> Commit tests separately or before implementation
+> Test project: `[Project].Tests/Features/[Story]/`
 
-- [ ] T010 [P] [US1] Unit tests for [Entity1] using AAA pattern in tests/unit/test_[entity1].py
-- [ ] T011 [P] [US1] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T012 [P] [US1] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T013 [P] [US1] Create [Entity1]ValidatorTests.cs using xUnit, test FluentValidation rules with AAA pattern
+- [ ] T014 [P] [US1] Create [Service]Tests.cs using xUnit Facts and mocked dependencies (Moq)
+- [ ] T015 [P] [US1] Create [Endpoint]Tests.cs for Minimal API endpoint testing with xUnit
+- [ ] T016 [P] [US1] Create integration tests in IntegrationTests project testing full slice workflow
 
-**Verification**: Run test suite, confirm all tests FAIL (red state) before proceeding to implementation
+**Verification**: Run `dotnet test`, confirm all xUnit tests FAIL (red state) before proceeding to implementation
 
-### Implementation for User Story 1
+### Implementation for User Story 1 (Vertical Slice Architecture)
 
-- [ ] T013 [P] [US1] Create [Entity1] model in src/models/[entity1].py
-- [ ] T014 [P] [US1] Create [Entity2] model in src/models/[entity2].py
-- [ ] T015 [US1] Implement [Service] in src/services/[service].py (depends on T013, T014)
-- [ ] T016 [US1] Implement [endpoint/feature] in src/[location]/[file].py
-- [ ] T017 [US1] Add input validation and secure error handling (Principle IV - Security)
-- [ ] T018 [US1] Add structured logging with correlation IDs (Principle V - Observability)
-- [ ] T019 [US1] Run tests - verify all pass (green state), refactor if needed
+- [ ] T017 [P] [US1] Create `Features/[Story]/[Request].cs` and `[Response].cs` models in src/[Project].Api/
+- [ ] T018 [P] [US1] Create `Features/[Story]/[RequestValidator].cs` using FluentValidation (semantic rules)
+- [ ] T019 [P] [US1] Create `Features/[Story]/[Service].cs` service in DI container
+- [ ] T020 [US1] Create `Features/[Story]/Endpoints/[Endpoint]Endpoint.cs` static class with Minimal API (depends on T017-T019)
+- [ ] T021 [US1] Register endpoints in Program.cs using extension method
+- [ ] T022 [US1] Add structured logging with correlation IDs to all operations (Principle V - Observability)
+- [ ] T023 [US1] Run xUnit tests - verify all pass (green state), refactor if needed
 
-**Checkpoint**: At this point, User Story 1 should be fully functional, tested, secure, and observable
+**Checkpoint**: At this point, User Story 1 (complete Vertical Slice) should be fully functional, tested, secure, and observable
 
 ---
 
@@ -121,10 +125,10 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 2 (OPTIONAL - only if tests requested) ⚠️
+### Tests for User Story 2 (MANDATORY per Constitution) ✅
 
-- [ ] T018 [P] [US2] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T019 [P] [US2] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T024 [P] [US2] Create xUnit tests for [Entity] in [Project].Tests/Features/[Story]/
+- [ ] T025 [P] [US2] Create xUnit tests for [Service] with Moq mocks
 
 ### Implementation for User Story 2
 

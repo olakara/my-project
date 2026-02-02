@@ -31,13 +31,21 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-This feature MUST comply with all constitutional principles:
+This feature MUST comply with all constitutional principles and technology requirements:
 
-- [ ] **I. TDD with AAA Pattern**: Plan includes test-first approach; tests will be written before implementation
+**Principles Compliance**:
+- [ ] **I. TDD with xUnit**: Plan includes test-first approach using xUnit; tests will be written before implementation
 - [ ] **II. Code Quality**: Architecture supports single responsibility; naming conventions documented
 - [ ] **III. Git & Commit Practices**: Feature branch follows `###-feature-name` format; commits will use conventional format
 - [ ] **IV. Security**: Security considerations identified; input validation, data protection planned
 - [ ] **V. Observability & Logging**: Logging strategy defined; structured logging with appropriate levels planned
+
+**Technology Stack Compliance**:
+- [ ] **.NET 10 Web API**: Using .NET 10 framework and minimal APIs
+- [ ] **Vertical Slice Architecture**: Features organized by domain with co-located models, services, endpoints, validators
+- [ ] **FluentValidation**: All request models have associated validators
+- [ ] **Dependency Injection**: Services registered in centralized extension method; constructor injection only
+- [ ] **RESTful API**: Endpoints follow REST principles with appropriate HTTP methods and status codes
 
 *Any violations MUST be justified in the Complexity Tracking section below.*
 

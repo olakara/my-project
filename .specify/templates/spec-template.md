@@ -3,7 +3,8 @@
 **Feature Branch**: `[###-feature-name]`  
 **Created**: [DATE]  
 **Status**: Draft  
-**Input**: User description: "$ARGUMENTS"
+**Input**: User description: "$ARGUMENTS"  
+**Architecture**: Vertical Slice | **Framework**: .NET 10 Web API | **Validation**: FluentValidation
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -24,6 +25,12 @@
   - Given = Arrange (set up test conditions)
   - When = Act (execute the behavior)
   - Then = Assert (verify expected outcomes)
+  
+  TECH STACK NOTES:
+  - Each user story will be implemented as a Vertical Slice in Features/[StoryName]/
+  - Create xUnit test project with tests written first using AAA pattern
+  - Create FluentValidation validators for all request models
+  - Implement Minimal API endpoints in static classes
 -->
 
 ### User Story 1 - [Brief Title] (Priority: P1)
