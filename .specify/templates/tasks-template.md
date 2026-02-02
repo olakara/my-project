@@ -11,7 +11,7 @@ description: "Task list template for feature implementation"
 **Constitutional Requirements**:
 - **TDD (NON-NEGOTIABLE)**: Tests MUST be written first, fail, then implementation follows
 - **AAA Pattern**: All tests MUST follow Arrange-Act-Assert structure
-- **Security**: Input validation, secure data handling in every user story
+- **Security**: Input validation, secure data handling; ASP.NET Core Identity and JWT for authentication; RBAC mandatory
 - **Logging**: Structured logging with appropriate levels for all operations
 - **Code Quality**: Single responsibility, clear naming, no duplication
 - **Git Commits**: MUST follow format `<type>(<task-id>): <description>` - frequent, small commits per task
@@ -102,13 +102,35 @@ Examples of foundational tasks (adjust based on your project):
 - [ ] T011 [P] Create EFCore entity configurations in `Data/Configurations/` for base entities with fluent API
 - [ ] T012 [P] Create EFCore initial migration and verify DbContext setup (`dotnet ef migrations add InitialCreate`)
 - [ ] T013 [P] Create Repository base class and register repositories in DI (Data/Repositories/)
-- [ ] T014 [P] Implement authentication/authorization framework with DI registration (Principle IV - Security)
-- [ ] T015 [P] Setup Minimal API base extensions for endpoint registration and routing
-- [ ] T016 Create base request/response models and common validators (FluentValidation)
-- [ ] T017 Implement correlation ID middleware for request tracing (Principle V - Serilog logging)
-- [ ] T018 Create Global Exception Handler that logs via Serilog with structured context (guardrail enforcement)
-- [ ] T019 Configure input validation error handling to return 400 Bad Request with Serilog logging
-- [ ] T020 Configure security scanning and dependency vulnerability checks
+- [ ] T014 [P] Setup ASP.NET Core Identity in Program.cs with password policy and lockout settings (Principle IV - Security)
+  - Register Identity services with strong password requirements (12+ chars, uppercase, lowercase, digits, special chars)
+  - Configure account lockout (max 5 failed attempts, 15-min lockout)
+  - Add `IdentityUser` and `IdentityRole` to EFCore DbContext
+  - Run migration: `dotnet ef migrations add AddIdentityTables`
+- [ ] T015 [P] Configure JWT (JSON Web Tokens) authentication in Program.cs (Principle IV - Security)
+  - Add NuGet: `System.IdentityModel.Tokens.Jwt` and `Microsoft.AspNetCore.Authentication.JwtBearer`
+  - Configure JWT validation parameters (issuer, audience, signing key from configuration)
+  - Set token expiration policy (15-60 minutes recommended)
+  - Never store JWT secrets in code; use configuration/secrets management
+- [ ] T016 [P] Implement JWT token generation service in `Features/Auth/` with refresh token support
+  - Create `IAuthService` interface for token generation
+  - Implement `AuthService` with `GenerateAccessTokenAsync()` and `GenerateRefreshTokenAsync()` methods
+  - Store refresh tokens securely with expiration (7 days recommended)
+- [ ] T017 [P] Create authorization policies in `Extensions/AuthorizationExtensions.cs` for role-based access (RBAC)
+  - Define application roles (Admin, Manager, User, Guest, etc.)
+  - Create policies: `AdminOnly`, `ManagerOrHigher`, `ContentCreators`, etc.
+  - Use `builder.Services.AddAuthorizationBuilder().AddPolicy()` pattern
+- [ ] T018 [P] Implement authentication endpoints in `Features/Auth/Endpoints/`
+  - Login endpoint: accepts credentials, validates against Identity, returns JWT + refresh token
+  - Refresh endpoint: accepts refresh token, validates, returns new JWT
+  - Logout endpoint: invalidates refresh token (add to blacklist)
+  - Password change endpoint: validates old password, updates via UserManager
+- [ ] T019 [P] Setup Minimal API base extensions for endpoint registration and routing
+- [ ] T020 Create base request/response models and common validators (FluentValidation)
+- [ ] T021 Implement correlation ID middleware for request tracing (Principle V - Serilog logging)
+- [ ] T022 Create Global Exception Handler that logs via Serilog with structured context (guardrail enforcement)
+- [ ] T023 Configure input validation error handling to return 400 Bad Request with Serilog logging
+- [ ] T024 Configure security scanning and dependency vulnerability checks
 
 **Checkpoint**: Foundation ready - Vertical Slice feature implementation can now begin in parallel
 
@@ -127,51 +149,52 @@ Examples of foundational tasks (adjust based on your project):
 > Run tests and verify they FAIL before any implementation
 > Test projects: `[Project].Tests/Domain/[Story]/`, `.Tests/Data/[Story]/`, `.Tests/Features/[Story]/`
 
-- [ ] T017 [P] [US1] Create Domain entity tests in `Tests/Domain/[Story]/[Entity]Tests.cs` - test business logic and validations
-- [ ] T018 [P] [US1] Create Repository tests in `Tests/Data/[Story]/[Entity]RepositoryTests.cs` - test EFCore data access
-- [ ] T019 [P] [US1] Create FluentValidator tests in `Tests/Features/[Story]/[RequestValidator]Tests.cs` with AAA pattern
-- [ ] T020 [P] [US1] Create Service tests in `Tests/Features/[Story]/[Service]Tests.cs` with Moq for dependencies
-- [ ] T021 [P] [US1] Create Endpoint tests in `Tests/Features/[Story]/[Endpoint]EndpointTests.cs` for Minimal API
-- [ ] T022 [P] [US1] Create integration tests in `IntegrationTests/Features/[Story]/` testing full workflow with real DB
+- [ ] T025 [P] [US1] Create Domain entity tests in `Tests/Domain/[Story]/[Entity]Tests.cs` - test business logic and validations
+- [ ] T026 [P] [US1] Create Repository tests in `Tests/Data/[Story]/[Entity]RepositoryTests.cs` - test EFCore data access
+- [ ] T027 [P] [US1] Create FluentValidator tests in `Tests/Features/[Story]/[RequestValidator]Tests.cs` with AAA pattern
+- [ ] T028 [P] [US1] Create Service tests in `Tests/Features/[Story]/[Service]Tests.cs` with Moq for dependencies
+- [ ] T029 [P] [US1] Create Endpoint tests in `Tests/Features/[Story]/[Endpoint]EndpointTests.cs` for Minimal API
+- [ ] T030 [P] [US1] Create integration tests in `IntegrationTests/Features/[Story]/` testing full workflow with real DB
 
 **Verification**: Run `dotnet test`, confirm all xUnit tests FAIL (red state) before proceeding to implementation
 
 ### Implementation for User Story 1 (Vertical Slice with Domain, Data, Features)
 
 **Domain Layer**:
-- [ ] T023 [P] [US1] Create Domain entity `Domain/[Story]/[Entity].cs` with business logic, value objects, nullable safety
+- [ ] T031 [P] [US1] Create Domain entity `Domain/[Story]/[Entity].cs` with business logic, value objects, nullable safety
   - Use explicit `?` annotations for nullable properties
   - Never null collections/required properties without `?`
   - Include domain validations
-- [ ] T024 [P] [US1] Create domain validations and business rules in entity (no null reference exceptions)
+- [ ] T032 [P] [US1] Create domain validations and business rules in entity (no null reference exceptions)
 
 **Data Layer (EFCore)**:
-- [ ] T025 [P] [US1] Create EFCore entity configuration in `Data/Configurations/[Entity]Configuration.cs` (fluent API)
-- [ ] T026 [P] [US1] Create EFCore migration: `dotnet ef migrations add Add[Entity]` in `Data/Migrations/`
-- [ ] T027 [P] [US1] Create Repository implementation in `Data/Repositories/[Entity]Repository.cs` with **async methods**
+- [ ] T033 [P] [US1] Create EFCore entity configuration in `Data/Configurations/[Entity]Configuration.cs` (fluent API)
+- [ ] T034 [P] [US1] Create EFCore migration: `dotnet ef migrations add Add[Entity]` in `Data/Migrations/`
+- [ ] T035 [P] [US1] Create Repository implementation in `Data/Repositories/[Entity]Repository.cs` with **async methods**
   - ALL repository methods MUST be async: `GetByIdAsync`, `CreateAsync`, `UpdateAsync`, `DeleteAsync`
   - Use `.ConfigureAwait(false)` in library code
   - Never use `.Result` or `.Wait()` on tasks
 
 **Features Layer (API)**:
-- [ ] T028 [P] [US1] Create request/response models: `Features/[Story]/[Request].cs` and `[Response].cs`
+- [ ] T036 [P] [US1] Create request/response models: `Features/[Story]/[Request].cs` and `[Response].cs`
   - Use explicit `?` for nullable properties
   - Non-nullable properties must be initialized or required
-- [ ] T029 [P] [US1] Create `Features/[Story]/[RequestValidator].cs` using FluentValidation (semantic rules)
-- [ ] T030 [P] [US1] Create `Features/[Story]/Services/[Service].cs` with **async business logic** (uses Domain + Repository)
+- [ ] T037 [P] [US1] Create `Features/[Story]/[RequestValidator].cs` using FluentValidation (semantic rules)
+- [ ] T038 [P] [US1] Create `Features/[Story]/Services/[Service].cs` with **async business logic** (uses Domain + Repository)
   - Service methods MUST be async: `CreateAsync`, `UpdateAsync`, etc.
   - Inject `ILogger<T>` and use for all operations
-- [ ] T031 [US1] Create `Features/[Story]/Endpoints/[Endpoint]Endpoint.cs` static class with **async Minimal API**
+- [ ] T039 [US1] Create `Features/[Story]/Endpoints/[Endpoint]Endpoint.cs` static class with **async Minimal API**
   - Handler MUST be async: `private static async Task<IResult> Handle(...)`
   - NO try-catch blocks (Global Exception Handling Middleware handles errors)
   - Validate requests; let middleware handle exceptions
   - Use null-safe navigation: `user?.Address?.City`
-- [ ] T032 [US1] Register endpoints and services in Program.cs using extension methods (DI)
-- [ ] T033 [US1] Add structured logging with correlation IDs to all operations (Serilog - Principle V)
+  - Implement RBAC: Use `.RequireAuthorization()` with appropriate roles
+- [ ] T040 [US1] Register endpoints and services in Program.cs using extension methods (DI)
+- [ ] T041 [US1] Add structured logging with correlation IDs to all operations (Serilog - Principle V)
   - Log method entry/exit at Debug level
   - Log business events at Info level
   - NEVER log sensitive data
-- [ ] T034 [US1] Run `dotnet test` - verify all tests pass (green state), refactor if needed
+- [ ] T042 [US1] Run `dotnet test` - verify all tests pass (green state), refactor if needed
   - Verify no nullable warnings
   - Verify all async methods tested with proper await patterns
 

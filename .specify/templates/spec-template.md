@@ -6,6 +6,7 @@
 **Input**: User description: "$ARGUMENTS"  
 **Architecture**: Vertical Slice | **Framework**: .NET 10 Web API | **Validation**: FluentValidation  
 **Database**: EFCore | **Logging**: Serilog  
+**Authentication**: ASP.NET Core Identity + JWT | **Authorization**: RBAC (Role-Based Access Control)  
 **Guardrails**: Async/Await First | Nullable Reference Types | Global Error Handling
 
 **Git Commits**: Use format `<type>(<task-id>): <description>` - see tasks.md for task-ids

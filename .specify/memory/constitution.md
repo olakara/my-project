@@ -1,35 +1,35 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version Change: 1.1.2 → 1.2.0
+Version Change: 1.2.0 → 1.2.1
 Created: 2026-02-02, Amended: 2026-02-02
-Bump Rationale: MINOR version - Add new Engineering Guardrails section with Asynchronous-First, Null Safety, and Global Error Handling requirements
+Bump Rationale: PATCH version - Enhanced Security-First Development (Principle IV) with ASP.NET Core Identity, JWT authentication, and mandatory RBAC
 
-Principles Defined:
-- I. Test-Driven Development (TDD with AAA Pattern using xUnit) - NON-NEGOTIABLE
-- II. Code Quality Standards
-- III. Git & Commit Practices (Task-based format)
-- IV. Security-First Development
-- V. Observability & Logging (Serilog structured logging)
+Principles Updated:
+- IV. Security-First Development: ENHANCED with ASP.NET Core Identity, JWT, and RBAC requirements
 
 Sections Enhanced:
-- Technology Stack: EFCore, Domain/Data folders, Serilog logging
-- NEW: Engineering Guardrails: Async/Await, Nullable reference types, Global exception handling
+- Authentication & Authorization subsection: Added Identity, JWT, and RBAC implementation details
+- Token Lifecycle Management: Refresh token patterns and token revocation
+- Code examples: JWT configuration, authorization policies, refresh token flow
 
-New Guardrails:
-1. Asynchronous-First: All I/O-bound operations MUST use async/await
-2. Null Safety: Nullable reference types enabled; explicit nullable annotations
-3. Error Handling: Global Exception Handling Middleware; no try-catch in controllers
+New Requirements:
+1. ASP.NET Core Identity MUST be used for user account management
+2. JWT (JSON Web Tokens) MUST be used for API authentication
+3. Role-Based Access Control (RBAC) is MANDATORY for all endpoints
+4. All protected endpoints MUST verify authentication and role membership
+5. Strong password policies and account lockout configured
+6. Token expiration and refresh token rotation implemented
 
-Templates Requiring Updates:
-✅ Updated: .specify/templates/plan-template.md - Engineering guardrails checks
-✅ Updated: .specify/templates/tasks-template.md - Async/null safety/error handling tasks
-✅ Updated: .specify/templates/spec-template.md - Reference to engineering guardrails
+Templates Updated:
+✅ .specify/templates/plan-template.md - Added RBAC/JWT security compliance checks
+✅ .specify/templates/spec-template.md - Added authentication/authorization metadata (Identity + JWT + RBAC)
+✅ .specify/templates/tasks-template.md - Added Identity setup (T014), JWT config (T015), Token service (T016), Authorization policies (T017), Auth endpoints (T018)
 
-Follow-up TODOs: None - All requirements defined and propagated
+Follow-up TODOs: None - all templates synchronized
 
 Suggested Commit Message:
-docs(v1.2.0): add engineering guardrails - async/await, null safety, global error handling
+docs(v1.2.1): enhance security principle - add ASP.NET Core Identity, JWT, and RBAC requirements
 -->
 
 # my-project Constitution
@@ -212,17 +212,118 @@ Closes: GITHUB-15
 - Authentication and authorization MUST be centralized and consistently applied
 - Error messages MUST NOT leak sensitive information or system details
 
+**Authentication & Authorization (Mandatory)**:
+- Use **ASP.NET Core Identity** for user account management and identity services
+- Implement **JWT (JSON Web Tokens)** for API authentication
+- **Role-Based Access Control (RBAC)** is MANDATORY for all endpoints
+- All protected endpoints MUST verify user authentication and appropriate role membership
+- Use `[Authorize]` and `[Authorize(Roles = "Admin")]` attributes consistently
+- Implement centralized authorization policies for complex permission logic
+- All authentication and authorization logic MUST be testable and auditable
+
+**ASP.NET Core Identity Setup (Mandatory)**:
+- Register Identity services in DI container with secure defaults
+- Use strong password policies (minimum length, complexity requirements)
+- Example registration in Program.cs:
+  ```csharp
+  builder.Services
+      .AddIdentity<IdentityUser, IdentityRole>(options => {
+          options.Password.RequiredLength = 12;
+          options.Password.RequireDigit = true;
+          options.Password.RequireUppercase = true;
+          options.Password.RequireLowercase = true;
+          options.Password.RequireNonAlphanumeric = true;
+          options.Lockout.MaxFailedAccessAttempts = 5;
+          options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+      })
+      .AddEntityFrameworkStores<ApplicationDbContext>()
+      .AddDefaultTokenProviders();
+  ```
+
+**JWT Authentication (Mandatory)**:
+- Configure JWT bearer authentication scheme
+- Issue tokens with appropriate expiration (15-60 minutes recommended)
+- Implement refresh token rotation for extended sessions
+- Store JWT signing keys securely in configuration/secrets (never in code)
+- Example authentication configuration:
+  ```csharp
+  builder.Services.AddAuthentication(options => {
+      options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+      options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+  })
+  .AddJwtBearer(options => {
+      options.TokenValidationParameters = new TokenValidationParameters {
+          ValidateIssuer = true,
+          ValidateAudience = true,
+          ValidateLifetime = true,
+          ValidateIssuerSigningKey = true,
+          ValidIssuer = builder.Configuration["Jwt:Issuer"],
+          ValidAudience = builder.Configuration["Jwt:Audience"],
+          IssuerSigningKey = new SymmetricSecurityKey(
+              Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]!))
+      };
+  });
+  ```
+
+**Role-Based Access Control (RBAC) - Mandatory**:
+- Define all application roles in a centralized location (Enum or database)
+- Example roles: Admin, Manager, User, Guest
+- All protected endpoints MUST declare required roles explicitly
+- Example minimal API with authorization:
+  ```csharp
+  app.MapGet("/api/users/{id}", GetUserHandler)
+      .WithName("GetUser")
+      .WithOpenApi()
+      .RequireAuthorization()
+      .RequireAuthorization(policy => policy.RequireRole("Admin", "Manager"));
+  ```
+- Implement authorization policies for complex rules:
+  ```csharp
+  builder.Services.AddAuthorizationBuilder()
+      .AddPolicy("AdminOnly", policy => 
+          policy.RequireRole("Admin"))
+      .AddPolicy("ContentCreators", policy =>
+          policy.RequireRole("Admin", "Editor", "Writer"));
+  ```
+
+**Token Lifecycle Management**:
+- Access tokens MUST have short expiration (15-60 minutes)
+- Implement refresh tokens for obtaining new access tokens
+- Refresh tokens MUST be stored securely (secure HTTP-only cookies or secure storage)
+- Implement token revocation mechanism (blacklist for logout)
+- Example refresh token flow:
+  ```csharp
+  // POST /auth/refresh
+  public async Task<IResult> RefreshToken(RefreshTokenRequest request) {
+      var user = await _userManager.FindByIdAsync(request.UserId);
+      if (user is null)
+          return Results.Unauthorized();
+      
+      var newAccessToken = GenerateAccessToken(user);
+      var newRefreshToken = GenerateRefreshToken();
+      
+      // Store new refresh token securely
+      user.RefreshToken = newRefreshToken;
+      user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
+      await _userManager.UpdateAsync(user);
+      
+      return Results.Ok(new { accessToken = newAccessToken, refreshToken = newRefreshToken });
+  }
+  ```
+
 **Secure Coding Practices**:
 - Always validate and sanitize inputs
-- Use secure defaults
-- Fail securely (deny by default)
-- Encrypt sensitive data in transit (TLS) and at rest
-- Implement rate limiting and request throttling
+- Use secure defaults (deny by default)
+- Fail securely (return appropriate 401/403 responses)
+- Encrypt sensitive data in transit (TLS/HTTPS enforced)
+- Encrypt sensitive data at rest (use EF Core encryption or DPAPI)
+- Implement rate limiting and request throttling (prevent brute-force attacks)
+- Log authentication/authorization events (user login, permission denied, etc.)
 - Regular security audits and penetration testing
 
-**Rationale**: Security breaches damage user trust, expose legal liability, and can be catastrophic. Building security in from the start is far more effective than retrofitting.
+**Rationale**: ASP.NET Core Identity provides battle-tested user management. JWT enables stateless, scalable authentication. RBAC enforces principle of least privilege at the endpoint level. This combination prevents unauthorized access and enables audit trails.
 
-**Enforcement**: Automated security scanning in CI/CD pipeline. Security-related PRs MUST be prioritized. Security code reviews MUST be performed by designated security champions or senior engineers.
+**Enforcement**: Code reviews MUST verify all protected endpoints have appropriate `[Authorize]` attributes with roles/policies. Security scanning tools MUST detect missing authorization. CI/CD MUST fail on hardcoded JWT secrets or credentials. Authentication/authorization test coverage MUST exceed 95%.
 
 ---
 
@@ -797,4 +898,4 @@ All code reviews, architectural decisions, and technical discussions MUST refere
 
 For runtime development guidance and detailed workflows, refer to the command prompt files in `.github/prompts/speckit.*.prompt.md`.
 
-**Version**: 1.2.0 | **Ratified**: 2026-02-02 | **Last Amended**: 2026-02-02
+**Version**: 1.2.1 | **Ratified**: 2026-02-02 | **Last Amended**: 2026-02-02

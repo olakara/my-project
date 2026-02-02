@@ -37,7 +37,7 @@ This feature MUST comply with all constitutional principles and technology requi
 - [ ] **I. TDD with xUnit**: Plan includes test-first approach using xUnit; tests will be written before implementation
 - [ ] **II. Code Quality**: Architecture supports single responsibility; naming conventions documented
 - [ ] **III. Git & Commit Practices**: Feature commits will use format `<type>(<task-id>): <description>`; frequent small commits per task
-- [ ] **IV. Security**: Security considerations identified; input validation, data protection planned
+- [ ] **IV. Security**: Input validation, data protection planned; ASP.NET Core Identity setup if user management involved; JWT/RBAC for protected endpoints
 - [ ] **V. Observability & Logging**: Logging strategy defined; structured logging with appropriate levels planned
 
 **Technology Stack Compliance**:
@@ -46,6 +46,7 @@ This feature MUST comply with all constitutional principles and technology requi
 - [ ] **FluentValidation**: All request models have associated validators
 - [ ] **Dependency Injection**: Services registered in centralized extension method; constructor injection only
 - [ ] **RESTful API**: Endpoints follow REST principles with appropriate HTTP methods and status codes
+- [ ] **Authentication & Authorization**: Protected endpoints use ASP.NET Core Identity and JWT; all endpoints declare [Authorize] with roles
 - [ ] **EFCore Database**: Using Entity Framework Core for data access; Domain entities in Domain/, DbContext in Data/
 - [ ] **Serilog Logging**: Structured logging configured with Serilog; correlation IDs for request tracing
 
