@@ -36,7 +36,7 @@ This feature MUST comply with all constitutional principles and technology requi
 **Principles Compliance**:
 - [ ] **I. TDD with xUnit**: Plan includes test-first approach using xUnit; tests will be written before implementation
 - [ ] **II. Code Quality**: Architecture supports single responsibility; naming conventions documented
-- [ ] **III. Git & Commit Practices**: Feature branch follows `###-feature-name` format; commits will use conventional format
+- [ ] **III. Git & Commit Practices**: Feature commits will use format `<type>(<task-id>): <description>`; frequent small commits per task
 - [ ] **IV. Security**: Security considerations identified; input validation, data protection planned
 - [ ] **V. Observability & Logging**: Logging strategy defined; structured logging with appropriate levels planned
 

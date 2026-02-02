@@ -1,10 +1,15 @@
 # Feature Specification: [FEATURE NAME]
 
-**Feature Branch**: `[###-feature-name]`  
+**Feature Branch**: `[T###-feature-name]`  
 **Created**: [DATE]  
 **Status**: Draft  
 **Input**: User description: "$ARGUMENTS"  
 **Architecture**: Vertical Slice | **Framework**: .NET 10 Web API | **Validation**: FluentValidation
+
+**Git Commits**: Use format `<type>(<task-id>): <description>` - see tasks.md for task-ids
+- Types: feat, fix, docs, refactor, test, chore
+- Example: `feat(T001): implement user registration endpoint`
+- Commits MUST be small and frequent (one per task/sub-task)
 
 ## User Scenarios & Testing *(mandatory)*
 

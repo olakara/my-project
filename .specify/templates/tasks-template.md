@@ -14,6 +14,17 @@ description: "Task list template for feature implementation"
 - **Security**: Input validation, secure data handling in every user story
 - **Logging**: Structured logging with appropriate levels for all operations
 - **Code Quality**: Single responsibility, clear naming, no duplication
+- **Git Commits**: MUST follow format `<type>(<task-id>): <description>` - frequent, small commits per task
+
+**Git Commit Standards**:
+- Commit format: `<type>(<task-id>): <description>` where task-id is the task ID from this list (e.g., T001, T015)
+- Types: feat, fix, docs, refactor, test, chore
+- Examples:
+  - `test(T013): add xUnit tests for CreateUserValidator`
+  - `feat(T020): implement CreateUserEndpoint with Minimal API`
+  - `chore(T001): add structured logging to registration flow`
+- **Commit Frequency**: One commit per task or sub-task (small and frequent)
+- Each commit MUST represent one logical unit of work
 
 **Tests**: Tests are MANDATORY per constitution Principle I. Write tests FIRST, verify they FAIL, then implement.
 
@@ -21,9 +32,11 @@ description: "Task list template for feature implementation"
 
 ## Format: `[ID] [P?] [Story] Description`
 
+- **[ID]**: Task identifier (e.g., T001, T015, T020) - MUST be used in commit messages
 - **[P]**: Can run in parallel (different files, no dependencies)
 - **[Story]**: Which user story this task belongs to (e.g., US1, US2, US3)
 - Include exact file paths in descriptions
+- Each task is a unit for one git commit
 
 ## Path Conventions
 

@@ -1,32 +1,32 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version Change: 1.0.0 → 1.1.0
+Version Change: 1.1.0 → 1.1.1
 Created: 2026-02-02, Amended: 2026-02-02
-Bump Rationale: MINOR version - Add Technology Stack section with .NET 10 Web API, FluentValidation, Vertical Slice architecture requirements; enhance TDD principle with xUnit specifics
+Bump Rationale: PATCH version - Clarification and refinement of Principle III (Git & Commit Practices) with detailed task-based commit format and frequent small commit strategy
 
 Principles Defined:
 - I. Test-Driven Development (TDD with AAA Pattern using xUnit) - NON-NEGOTIABLE
 - II. Code Quality Standards
-- III. Git & Commit Practices
+- III. Git & Commit Practices (ENHANCED) - Task-based commit format, frequent small commits
 - IV. Security-First Development
 - V. Observability & Logging
 
-Sections Added:
-- Technology Stack: .NET 10, FluentValidation, Vertical Slice, Minimal API, DI, RESTful
-
 Modified Principles:
-- I. TDD: Enhanced with xUnit framework and C# testing patterns
+- III. Git & Commit Practices: Enhanced with task-based commit format `<type>(<task-id/issue-id>): <description>`
+  - Commit types: feat, fix, docs, refactor, test, chore
+  - Emphasis on frequent, small commits at task/sub-task level
+  - Task-id from tasks.md or GitHub issue-id for traceability
 
 Templates Requiring Updates:
-✅ Updated: .specify/templates/plan-template.md - Constitution Check includes tech stack
-✅ Updated: .specify/templates/spec-template.md - Aligned with tech stack
-✅ Updated: .specify/templates/tasks-template.md - Tech stack tasks added to foundational phase
+✅ Updated: .specify/templates/plan-template.md - Git practices check
+✅ Updated: .specify/templates/tasks-template.md - Commit format guidance
+✅ Updated: .specify/templates/spec-template.md - Reference to commit standards
 
 Follow-up TODOs: None - All requirements defined and propagated
 
 Suggested Commit Message:
-docs: amend constitution to v1.1.0 - add .NET 10 tech stack and xUnit testing requirements
+docs: amend constitution to v1.1.1 - enhance git commit practices with task-based format
 -->
 
 # my-project Constitution
@@ -96,33 +96,103 @@ Every test MUST follow the Arrange-Act-Assert structure:
 
 ### III. Git & Commit Practices
 
-**Rule**: All changes MUST follow standard git workflows with clear, atomic commits.
+**Rule**: All changes MUST follow standard git workflows with clear, atomic commits linked to tasks.
 
-**Commit Standards**:
-- Use conventional commit format: `type(scope): description`
-  - **Types**: feat, fix, docs, style, refactor, test, chore, perf, ci, build
-  - **Example**: `feat(auth): add JWT token validation`
-  - **Example**: `test(auth): add AAA tests for JWT validation`
-- First line ≤ 50 characters; body lines ≤ 72 characters
-- Body explains "what" and "why," not "how"
-- Reference related issues/tickets
+**Commit Format (Mandatory)**:
+```
+<type>(<task-id/issue-id>): <description>
+```
+
+**Examples**:
+- `feat(T001): implement user registration endpoint`
+- `test(GITHUB-42): add AAA tests for email validation`
+- `fix(T015): resolve null reference in UserService`
+- `docs(T020): update API documentation for auth flow`
+- `refactor(GITHUB-88): extract validation logic to service`
+- `chore(T005): update FluentValidation dependency`
+
+**Commit Types (Mandatory)**:
+- **feat**: New feature or capability
+- **fix**: Bug fix or issue resolution
+- **docs**: Documentation updates (README, API docs, comments)
+- **refactor**: Code restructuring without behavior change
+- **test**: Test additions, fixes, or improvements
+- **chore**: Maintenance tasks, dependency updates, tooling
+
+**Task-ID / Issue-ID Reference (Mandatory)**:
+- Use task ID from `tasks.md` (e.g., T001, T015, T020)
+- OR GitHub issue ID (e.g., GITHUB-42, GITHUB-88, #123)
+- Task-ID enables traceability across feature development
+- Links commits to specification and implementation planning
+- Facilitates automated changelog generation and release notes
+
+**Commit Message Structure**:
+- **First line** (type + task-id + description): ≤ 50 characters
+- **Blank line**: Separate subject from body
+- **Body**: Explain "what" and "why", not "how" (≤ 72 characters per line)
+- **References**: Include related task-ids or GitHub issues
+
+**Example Detailed Commit**:
+```
+feat(T001): implement user registration endpoint
+
+Adds POST /api/v1/users endpoint to allow account creation.
+
+Changes:
+- Create CreateUserRequest and CreateUserResponse DTOs
+- Create CreateUserValidator using FluentValidation
+- Implement UserService.CreateUserAsync method
+- Create CreateUserEndpoint static class with Minimal API
+
+Related tasks: T001, T002 (validation)
+Closes: GITHUB-15
+```
+
+**Commit Frequency & Granularity (Mandatory)**:
+- Commits MUST be **frequent and small** - ideally one commit per task or sub-task
+- Each commit SHOULD represent one logical unit of work
+- Avoid multi-task or "kitchen sink" commits
+- Example progression for a feature:
+  ```
+  T001 - Write tests → [commit: test(T001): add xUnit tests for user registration]
+  T001 - Implement request validators → [commit: feat(T001): add FluentValidation validators]
+  T001 - Implement service → [commit: feat(T001): implement UserService.CreateUserAsync]
+  T001 - Implement endpoint → [commit: feat(T001): create CreateUserEndpoint with Minimal API]
+  T001 - Add logging → [commit: chore(T001): add structured logging to registration flow]
+  ```
+- Small commits enable:
+  - Precise code archaeology and debugging
+  - Easy cherry-picking and reverts
+  - Clear attribution of changes
+  - Meaningful code review feedback
 
 **Branching Strategy**:
 - Branch from `main` or `develop` depending on project workflow
-- Branch naming: `###-feature-name` or `type/description`
+- Branch naming: `<task-id>-<description>` or `<type>/<description>`
+  - Example: `T001-user-registration` or `feat/user-registration`
 - Feature branches MUST be short-lived (< 3 days ideal)
-- MUST rebase/merge latest changes before creating PR
+- Rebase onto latest upstream before creating PR
 
 **Pull Request Requirements**:
-- Each PR MUST be focused on a single feature or fix
-- Include tests (written first per Principle I)
+- Each PR MUST be focused on single feature/epic (multiple related tasks OK)
+- Include all commits with proper format and task-id references
+- All xUnit tests MUST pass (Principle I)
 - Pass all CI/CD checks (tests, linting, security scans)
-- Require at least one approval
-- Squash commits if history is noisy; preserve if history is valuable
+- Require at least one approval from code reviewer
+- Verify commit history is clean and meaningful
+  - Squash only if commits are noise or duplicative
+  - Preserve if commit history aids understanding
 
-**Rationale**: Clear git history aids debugging, code archaeology, and collaboration. Conventional commits enable automated changelog generation and semantic versioning.
+**Git History Standards**:
+- History MUST be searchable by task-id and issue-id
+- Rebase preferred over merge for linear history (when safe)
+- Merge commits acceptable for feature branches to maintain branch identity
+- Use `git log --grep=T001` to find all commits related to a task
+- Use `git log --grep=#123` to find GitHub issue-related commits
 
-**Enforcement**: Git hooks and CI/CD MUST enforce commit message format. PRs violating standards MUST be rejected.
+**Rationale**: Task-based commits enable precise traceability from feature specification through implementation. Frequent, small commits reduce cognitive load in code reviews, simplify debugging, and create meaningful history. Linked task-ids bridge specification, implementation, testing, and deployment phases. Clear git history is essential for team collaboration and future maintenance.
+
+**Enforcement**: Git hooks MUST validate commit format before allowing commits to local repository. CI/CD pipeline MUST reject PRs with non-compliant commit messages. Code reviews MUST verify commit granularity and relevance to referenced tasks.
 
 ---
 
@@ -348,4 +418,4 @@ All code reviews, architectural decisions, and technical discussions MUST refere
 
 For runtime development guidance and detailed workflows, refer to the command prompt files in `.github/prompts/speckit.*.prompt.md`.
 
-**Version**: 1.1.0 | **Ratified**: 2026-02-02 | **Last Amended**: 2026-02-02
+**Version**: 1.1.1 | **Ratified**: 2026-02-02 | **Last Amended**: 2026-02-02
