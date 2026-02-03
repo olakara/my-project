@@ -30,7 +30,10 @@ public class JwtTokenService : IJwtTokenService
         var secret = _configuration["Jwt:Secret"];
         var issuer = _configuration["Jwt:Issuer"];
         var audience = _configuration["Jwt:Audience"];
-        var expirationMinutes = _configuration.GetValue<int>("Jwt:AccessTokenExpirationMinutes", 15);
+        var expirationMinutesString = _configuration["Jwt:AccessTokenExpirationMinutes"];
+        var expirationMinutes = string.IsNullOrEmpty(expirationMinutesString) 
+            ? 15 
+            : int.Parse(expirationMinutesString);
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret ?? throw new InvalidOperationException("JWT Secret not configured")));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -40,7 +43,7 @@ public class JwtTokenService : IJwtTokenService
             new Claim(ClaimTypes.NameIdentifier, user.Id),
             new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
             new Claim(ClaimTypes.Name, user.FullName),
-            new Claim("sub", user.Id)
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id)
         };
 
         var token = new JwtSecurityToken(
