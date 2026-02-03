@@ -128,14 +128,14 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Frontend Auth
 
-- [ ] T046 [US1] Create auth types in `frontend/src/types/auth.types.ts` defining User, AuthToken, LoginRequest, RegisterRequest interfaces
-- [ ] T047 [P] [US1] Create auth API client in `frontend/src/services/api/authApi.ts` with methods for register(), login(), logout(), refreshToken() using axios interceptors
-- [ ] T048 [US1] Create Zustand auth store in `frontend/src/store/authStore.ts` managing user state, tokens, login/logout/register actions, persistent storage via middleware
-- [ ] T049 [P] [US1] Create useAuth hook in `frontend/src/hooks/useAuth.ts` providing auth context to components (user, isLoading, error, login, register, logout)
-- [ ] T050 [US1] Create login page in `frontend/src/pages/auth/LoginPage.tsx` with form, email/password inputs, error display, link to register
-- [ ] T051 [P] [US1] Create register page in `frontend/src/pages/auth/RegisterPage.tsx` with form, firstName/lastName/email/password inputs, validation feedback, link to login
-- [ ] T052 [US1] Create protected route component in `frontend/src/components/auth/ProtectedRoute.tsx` redirecting unauthenticated users to login
-- [ ] T053 [P] [US1] Create API client with token interceptor in `frontend/src/services/api/apiClient.ts` injecting JWT into requests, handling 401 responses with silent refresh
+- [X] T046 [US1] Create auth types in `frontend/src/types/auth.types.ts` defining User, AuthToken, LoginRequest, RegisterRequest interfaces
+- [X] T047 [P] [US1] Create auth API client in `frontend/src/services/api/authApi.ts` with methods for register(), login(), logout(), refreshToken() using axios interceptors
+- [X] T048 [US1] Create Zustand auth store in `frontend/src/store/authStore.ts` managing user state, tokens, login/logout/register actions, persistent storage via middleware
+- [X] T049 [P] [US1] Create useAuth hook in `frontend/src/hooks/useAuth.ts` providing auth context to components (user, isLoading, error, login, register, logout)
+- [X] T050 [US1] Create login page in `frontend/src/pages/auth/LoginPage.tsx` with form, email/password inputs, error display, link to register
+- [X] T051 [P] [US1] Create register page in `frontend/src/pages/auth/RegisterPage.tsx` with form, firstName/lastName/email/password inputs, validation feedback, link to login
+- [X] T052 [US1] Create protected route component in `frontend/src/components/auth/ProtectedRoute.tsx` redirecting unauthenticated users to login
+- [X] T053 [P] [US1] Create API client with token interceptor in `frontend/src/services/api/apiClient.ts` injecting JWT into requests, handling 401 responses with silent refresh
 
 ---
 
