@@ -34,7 +34,16 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<TaskManagementDbContext>();
-    dbContext.Database.Migrate();
+    // Only run migrations if using a relational database (not in-memory for tests)
+    try
+    {
+        dbContext.Database.Migrate();
+    }
+    catch (InvalidOperationException)
+    {
+        // In-memory database doesn't support migrations, just ensure created
+        dbContext.Database.EnsureCreated();
+    }
 }
 
 // Configure the HTTP request pipeline
@@ -44,3 +53,5 @@ app.UseApplicationMiddleware();
 app.MapApplicationEndpoints();
 
 app.Run();
+
+public partial class Program { }

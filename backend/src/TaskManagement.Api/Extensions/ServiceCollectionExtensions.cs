@@ -61,6 +61,9 @@ public static class ServiceCollectionExtensions
                 };
             });
 
+        // Authorization
+        services.AddAuthorization();
+
         // CORS
         services.AddCors(options =>
         {
