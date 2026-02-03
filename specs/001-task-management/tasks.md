@@ -121,7 +121,7 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Auth Feature - Tests
 
-- [ ] T042 [US1] Create registration unit tests in `backend/tests/TaskManagement.Api.Tests/Features/Auth/RegisterServiceTests.cs` testing valid registration, duplicate email validation, password complexity validation
+- [x] T042 [US1] Create registration unit tests in `backend/tests/TaskManagement.Api.Tests/Features/Auth/RegisterServiceTests.cs` testing valid registration, duplicate email validation, password complexity validation
 - [ ] T043 [P] [US1] Create login unit tests in `backend/tests/TaskManagement.Api.Tests/Features/Auth/LoginServiceTests.cs` testing successful login, failed attempts lockout, token generation
 - [ ] T044 [P] [US1] Create integration tests in `backend/tests/TaskManagement.IntegrationTests/Auth/AuthIntegrationTests.cs` testing full auth flow: register → login → access protected endpoint → refresh token → logout
 - [ ] T045 [US1] Create JWT token service tests in `backend/tests/TaskManagement.Api.Tests/Services/JwtTokenServiceTests.cs` testing token generation, validation, refresh token rotation
