@@ -49,7 +49,7 @@ This document contains all implementation tasks organized by phase and user stor
 - [x] T010 [P] Create EFCore entity configurations for User: `backend/src/TaskManagement.Api/Data/Configurations/UserConfiguration.cs` with identity mapping, shadow properties, indexes
 - [x] T011 [P] Create entity configurations for Project, ProjectMember, Task: `backend/src/TaskManagement.Api/Data/Configurations/ProjectConfiguration.cs`, `ProjectMemberConfiguration.cs`, `TaskConfiguration.cs`
 - [x] T012 [P] Create entity configurations for Comment, TaskHistory, Notification, ProjectInvitation: corresponding configuration classes in `backend/src/TaskManagement.Api/Data/Configurations/`
-- [ ] T013 Create initial EFCore migration in `backend/src/TaskManagement.Api/Data/Migrations/` named `InitialCreate` with all entity tables, foreign keys, and indexes
+- [x] T013 Create initial EFCore migration in `backend/src/TaskManagement.Api/Data/Migrations/` named `InitialCreate` with all entity tables, foreign keys, and indexes
 - [x] T014 [P] Create repository interfaces: `IUserRepository.cs`, `IProjectRepository.cs`, `ITaskRepository.cs` in `backend/src/TaskManagement.Api/Data/Repositories/`
 - [x] T015 [P] Implement repository classes: `UserRepository.cs`, `ProjectRepository.cs`, `TaskRepository.cs` in `backend/src/TaskManagement.Api/Data/Repositories/` with async methods and query filters
 
