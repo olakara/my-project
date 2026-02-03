@@ -45,19 +45,19 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Database & Data Access
 
-- [ ] T009 [P] Create EFCore DbContext in `backend/src/TaskManagement.Api/Data/TaskManagementDbContext.cs` with DbSets for all entities (User, Project, ProjectMember, Task, Comment, TaskHistory, Notification, ProjectInvitation)
-- [ ] T010 [P] Create EFCore entity configurations for User: `backend/src/TaskManagement.Api/Data/Configurations/UserConfiguration.cs` with identity mapping, shadow properties, indexes
-- [ ] T011 [P] Create entity configurations for Project, ProjectMember, Task: `backend/src/TaskManagement.Api/Data/Configurations/ProjectConfiguration.cs`, `ProjectMemberConfiguration.cs`, `TaskConfiguration.cs`
-- [ ] T012 [P] Create entity configurations for Comment, TaskHistory, Notification, ProjectInvitation: corresponding configuration classes in `backend/src/TaskManagement.Api/Data/Configurations/`
+- [x] T009 [P] Create EFCore DbContext in `backend/src/TaskManagement.Api/Data/TaskManagementDbContext.cs` with DbSets for all entities (User, Project, ProjectMember, Task, Comment, TaskHistory, Notification, ProjectInvitation)
+- [x] T010 [P] Create EFCore entity configurations for User: `backend/src/TaskManagement.Api/Data/Configurations/UserConfiguration.cs` with identity mapping, shadow properties, indexes
+- [x] T011 [P] Create entity configurations for Project, ProjectMember, Task: `backend/src/TaskManagement.Api/Data/Configurations/ProjectConfiguration.cs`, `ProjectMemberConfiguration.cs`, `TaskConfiguration.cs`
+- [x] T012 [P] Create entity configurations for Comment, TaskHistory, Notification, ProjectInvitation: corresponding configuration classes in `backend/src/TaskManagement.Api/Data/Configurations/`
 - [ ] T013 Create initial EFCore migration in `backend/src/TaskManagement.Api/Data/Migrations/` named `InitialCreate` with all entity tables, foreign keys, and indexes
-- [ ] T014 [P] Create repository interfaces: `IUserRepository.cs`, `IProjectRepository.cs`, `ITaskRepository.cs` in `backend/src/TaskManagement.Api/Data/Repositories/`
-- [ ] T015 [P] Implement repository classes: `UserRepository.cs`, `ProjectRepository.cs`, `TaskRepository.cs` in `backend/src/TaskManagement.Api/Data/Repositories/` with async methods and query filters
+- [x] T014 [P] Create repository interfaces: `IUserRepository.cs`, `IProjectRepository.cs`, `ITaskRepository.cs` in `backend/src/TaskManagement.Api/Data/Repositories/`
+- [x] T015 [P] Implement repository classes: `UserRepository.cs`, `ProjectRepository.cs`, `TaskRepository.cs` in `backend/src/TaskManagement.Api/Data/Repositories/` with async methods and query filters
 
 ### Authentication & Authorization
 
-- [ ] T016 [P] Create JWT token service in `backend/src/TaskManagement.Api/Services/JwtTokenService.cs` with methods for generating access tokens, refresh tokens, validating tokens, and refresh token rotation
-- [ ] T017 Create middleware for authentication: `backend/src/TaskManagement.Api/Middleware/AuthenticationMiddleware.cs` to validate JWT tokens from Authorization header
-- [ ] T018 Create middleware for correlation IDs: `backend/src/TaskManagement.Api/Middleware/CorrelationIdMiddleware.cs` to add request tracing capability
+- [x] T016 [P] Create JWT token service in `backend/src/TaskManagement.Api/Services/JwtTokenService.cs` with methods for generating access tokens, refresh tokens, validating tokens, and refresh token rotation
+- [x] T017 Create middleware for authentication: `backend/src/TaskManagement.Api/Middleware/AuthenticationMiddleware.cs` to validate JWT tokens from Authorization header
+- [x] T018 Create middleware for correlation IDs: `backend/src/TaskManagement.Api/Middleware/CorrelationIdMiddleware.cs` to add request tracing capability
 - [x] T019 [P] Create global exception handling middleware: `backend/src/TaskManagement.Api/Middleware/ExceptionHandlingMiddleware.cs` to catch unhandled exceptions and return standardized error responses with correlation IDs
 - [x] T020 Configure ASP.NET Core Identity in `backend/src/TaskManagement.Api/Program.cs`: IdentityBuilder setup, password policy (12+ chars, complexity), user manager configuration
 
@@ -73,9 +73,9 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Domain Entities
 
-- [ ] T025 [P] Create domain entity classes in `backend/src/TaskManagement.Api/Domain/`: `ApplicationUser.cs` extending IdentityUser, with properties for profile info, refresh tokens, timestamps, navigation properties to ProjectMember, Task, Comment, Notification
-- [ ] T026 [P] Create Project entity in `backend/src/TaskManagement.Api/Domain/Projects/Project.cs` with properties for name, description, owner, archived flag, timestamps, and navigation properties to ProjectMember, Task, ProjectInvitation
-- [ ] T027 Create ProjectMember entity in `backend/src/TaskManagement.Api/Domain/Projects/ProjectMember.cs` with user/project references, role enum (Owner/Manager/Member), timestamps, and business methods for permission checks
+- [x] T025 [P] Create domain entity classes in `backend/src/TaskManagement.Api/Domain/`: `ApplicationUser.cs` extending IdentityUser, with properties for profile info, refresh tokens, timestamps, navigation properties to ProjectMember, Task, Comment, Notification
+- [x] T026 [P] Create Project entity in `backend/src/TaskManagement.Api/Domain/Projects/Project.cs` with properties for name, description, owner, archived flag, timestamps, and navigation properties to ProjectMember, Task, ProjectInvitation
+- [x] T027 Create ProjectMember entity in `backend/src/TaskManagement.Api/Domain/Projects/ProjectMember.cs` with user/project references, role enum (Owner/Manager/Member), timestamps, and business methods for permission checks
 
 ---
 
@@ -92,8 +92,8 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Domain & Data
 
-- [ ] T028 [P] Create Task and Comment domain entities in `backend/src/TaskManagement.Api/Domain/Tasks/`: `Task.cs` with properties for title, description, status enum, priority enum, assignee, timestamps; `Comment.cs` with content, author, task reference, timestamps
-- [ ] T029 [P] Create TaskHistory and Notification entities in `backend/src/TaskManagement.Api/Domain/Tasks/TaskHistory.cs` and `backend/src/TaskManagement.Api/Domain/Notifications/Notification.cs` for audit trail and user notifications
+- [x] T028 [P] Create Task and Comment domain entities in `backend/src/TaskManagement.Api/Domain/Tasks/`: `Task.cs` with properties for title, description, status enum, priority enum, assignee, timestamps; `Comment.cs` with content, author, task reference, timestamps
+- [x] T029 [P] Create TaskHistory and Notification entities in `backend/src/TaskManagement.Api/Domain/Tasks/TaskHistory.cs` and `backend/src/TaskManagement.Api/Domain/Notifications/Notification.cs` for audit trail and user notifications
 
 ### Auth Feature - Registration
 
