@@ -1,0 +1,294 @@
+openapi: 3.0.3
+info:
+  title: Task Management - Real-Time API (SignalR)
+  version: 1.0.0
+  description: SignalR hub methods and events for real-time collaboration
+  x-connection:
+    description: SignalR connection details
+    authentication:
+      type: JWT
+      header: Authorization
+      format: Bearer {token}
+    connectionUrl: /hubs/taskmanagement
+    protocol: json
+    transports:
+      - WebSockets
+      - ServerSentEvents
+      - LongPolling
+
+servers:
+  - url: wss://api.taskmanagement.local/hubs/taskmanagement
+    description: WebSocket connection for local development
+  - url: wss://api.taskmanagement.app/hubs/taskmanagement
+    description: WebSocket connection for production
+
+paths: {}
+
+components:
+  schemas:
+    HubMethods:
+      type: object
+      description: Client-to-Server methods (invoked by frontend)
+      properties:
+        JoinProject:
+          type: object
+          description: Join project room to receive updates
+          properties:
+            method:
+              type: string
+              enum: [JoinProject]
+            parameters:
+              type: object
+              required: [projectId]
+              properties:
+                projectId:
+                  type: integer
+                  description: Project ID to subscribe to
+          example:
+            method: JoinProject
+            parameters:
+              projectId: 1
+
+        LeaveProject:
+          type: object
+          description: Leave project room (stop receiving updates)
+          properties:
+            method:
+              type: string
+              enum: [LeaveProject]
+            parameters:
+              type: object
+              required: [projectId]
+              properties:
+                projectId:
+                  type: integer
+          example:
+            method: LeaveProject
+            parameters:
+              projectId: 1
+
+        SendTypingIndicator:
+          type: object
+          description: Notify others user is typing a comment
+          properties:
+            method:
+              type: string
+              enum: [SendTypingIndicator]
+            parameters:
+              type: object
+              required: [taskId, isTyping]
+              properties:
+                taskId:
+                  type: integer
+                isTyping:
+                  type: boolean
+
+    HubEvents:
+      type: object
+      description: Server-to-Client events (received by frontend)
+      properties:
+        TaskCreated:
+          type: object
+          description: New task created in project
+          properties:
+            event:
+              type: string
+              enum: [TaskCreated]
+            data:
+              $ref: '#/components/schemas/TaskCard'
+
+        TaskUpdated:
+          type: object
+          description: Task updated (title, description, priority, due date)
+          properties:
+            event:
+              type: string
+              enum: [TaskUpdated]
+            data:
+              $ref: '#/components/schemas/TaskCard'
+
+        TaskStatusChanged:
+          type: object
+          description: Task moved between columns (Kanban drag-drop)
+          properties:
+            event:
+              type: string
+              enum: [TaskStatusChanged]
+            data:
+              type: object
+              required: [taskId, oldStatus, newStatus, updatedBy]
+              properties:
+                taskId:
+                  type: integer
+                oldStatus:
+                  type: string
+                  enum: [ToDo, InProgress, InReview, Done]
+                newStatus:
+                  type: string
+                  enum: [ToDo, InProgress, InReview, Done]
+                updatedBy:
+                  $ref: '#/components/schemas/UserSummary'
+                timestamp:
+                  type: string
+                  format: date-time
+
+        TaskAssigned:
+          type: object
+          description: Task assigned or reassigned to user
+          properties:
+            event:
+              type: string
+              enum: [TaskAssigned]
+            data:
+              type: object
+              required: [taskId, assignee, assignedBy]
+              properties:
+                taskId:
+                  type: integer
+                assignee:
+                  $ref: '#/components/schemas/UserSummary'
+                assignedBy:
+                  $ref: '#/components/schemas/UserSummary'
+                timestamp:
+                  type: string
+                  format: date-time
+
+        TaskDeleted:
+          type: object
+          description: Task deleted from project
+          properties:
+            event:
+              type: string
+              enum: [TaskDeleted]
+            data:
+              type: object
+              required: [taskId, deletedBy]
+              properties:
+                taskId:
+                  type: integer
+                deletedBy:
+                  $ref: '#/components/schemas/UserSummary'
+
+        CommentAdded:
+          type: object
+          description: New comment added to task
+          properties:
+            event:
+              type: string
+              enum: [CommentAdded]
+            data:
+              $ref: '#/components/schemas/Comment'
+
+        UserTyping:
+          type: object
+          description: User is typing a comment
+          properties:
+            event:
+              type: string
+              enum: [UserTyping]
+            data:
+              type: object
+              required: [taskId, user, isTyping]
+              properties:
+                taskId:
+                  type: integer
+                user:
+                  $ref: '#/components/schemas/UserSummary'
+                isTyping:
+                  type: boolean
+
+        ProjectMemberJoined:
+          type: object
+          description: New member joined project
+          properties:
+            event:
+              type: string
+              enum: [ProjectMemberJoined]
+            data:
+              type: object
+              properties:
+                projectId:
+                  type: integer
+                member:
+                  $ref: '#/components/schemas/ProjectMember'
+
+        ProjectMemberLeft:
+          type: object
+          description: Member left or was removed from project
+          properties:
+            event:
+              type: string
+              enum: [ProjectMemberLeft]
+            data:
+              type: object
+              properties:
+                projectId:
+                  type: integer
+                userId:
+                  type: string
+                  format: uuid
+
+    TaskCard:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        status:
+          type: string
+          enum: [ToDo, InProgress, InReview, Done]
+        priority:
+          type: string
+          enum: [Low, Medium, High]
+        assignee:
+          $ref: '#/components/schemas/UserSummary'
+        dueDate:
+          type: string
+          format: date-time
+          nullable: true
+
+    Comment:
+      type: object
+      properties:
+        id:
+          type: integer
+        content:
+          type: string
+        taskId:
+          type: integer
+        author:
+          $ref: '#/components/schemas/UserSummary'
+        createdAt:
+          type: string
+          format: date-time
+
+    UserSummary:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+        profilePictureUrl:
+          type: string
+          nullable: true
+
+    ProjectMember:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [Owner, Manager, Member]
+        joinedAt:
+          type: string
+          format: date-time
+

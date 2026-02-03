@@ -1,0 +1,349 @@
+openapi: 3.0.3
+info:
+  title: Task Management - Authentication API
+  version: 1.0.0
+  description: Authentication and authorization endpoints for user registration, login, token refresh, and logout
+
+servers:
+  - url: https://api.taskmanagement.local/api/v1
+    description: Local development server
+  - url: https://api.taskmanagement.app/api/v1
+    description: Production server
+
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user account
+      operationId: registerUser
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - firstName
+                - lastName
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: john.doe@example.com
+                  description: User email address (must be unique)
+                password:
+                  type: string
+                  format: password
+                  minLength: 12
+                  example: SecureP@ssw0rd!
+                  description: Password (12+ chars, uppercase, lowercase, digit, special char)
+                firstName:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                  example: John
+                lastName:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                  example: Doe
+      responses:
+        '201':
+          description: User account created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: string
+                    format: uuid
+                    example: 550e8400-e29b-41d4-a716-446655440000
+                  email:
+                    type: string
+                    example: john.doe@example.com
+                  fullName:
+                    type: string
+                    example: John Doe
+                  accessToken:
+                    type: string
+                    description: JWT access token (15 min expiration)
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  expiresIn:
+                    type: integer
+                    description: Access token expiration in seconds
+                    example: 900
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: refreshToken=abc123...; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=604800
+              description: Refresh token set as HTTP-only cookie (7 days expiration)
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '409':
+          description: Email already registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: Email already registered
+                correlationId: 123e4567-e89b-12d3-a456-426614174000
+
+  /auth/login:
+    post:
+      summary: Authenticate user and receive JWT tokens
+      operationId: loginUser
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: john.doe@example.com
+                password:
+                  type: string
+                  format: password
+                  example: SecureP@ssw0rd!
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: string
+                    format: uuid
+                  email:
+                    type: string
+                  fullName:
+                    type: string
+                  accessToken:
+                    type: string
+                    description: JWT access token (15 min expiration)
+                  expiresIn:
+                    type: integer
+                    example: 900
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+              description: Refresh token set as HTTP-only cookie
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: Invalid email or password
+                correlationId: 123e4567-e89b-12d3-a456-426614174000
+        '423':
+          description: Account locked due to multiple failed login attempts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Account locked. Try again in 15 minutes.
+                  lockedUntil:
+                    type: string
+                    format: date-time
+                    example: 2026-02-03T18:30:00Z
+                  correlationId:
+                    type: string
+
+  /auth/refresh:
+    post:
+      summary: Refresh access token using refresh token
+      operationId: refreshToken
+      tags:
+        - Authentication
+      description: Exchanges refresh token (from cookie) for new access token and rotates refresh token
+      parameters:
+        - name: Cookie
+          in: header
+          required: true
+          schema:
+            type: string
+            example: refreshToken=abc123...
+          description: Refresh token from HTTP-only cookie
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                    description: New JWT access token
+                  expiresIn:
+                    type: integer
+                    example: 900
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+              description: New rotated refresh token
+        '401':
+          description: Invalid or expired refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: Invalid refresh token
+                correlationId: 123e4567-e89b-12d3-a456-426614174000
+
+  /auth/logout:
+    post:
+      summary: Logout user and revoke refresh token
+      operationId: logoutUser
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Logout successful
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: refreshToken=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0
+              description: Refresh token cookie cleared
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/me:
+    get:
+      summary: Get current authenticated user profile
+      operationId: getCurrentUser
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User profile retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT access token in Authorization header
+
+  schemas:
+    UserProfile:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+        lastName:
+          type: string
+        fullName:
+          type: string
+        profilePictureUrl:
+          type: string
+          format: uri
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Human-readable error message
+        correlationId:
+          type: string
+          format: uuid
+          description: Request correlation ID for tracing
+        details:
+          type: object
+          additionalProperties: true
+          description: Additional error details (optional)
+
+    ValidationErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Validation failed
+        correlationId:
+          type: string
+          format: uuid
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          example:
+            email: ["Email is required", "Email must be valid format"]
+            password: ["Password must be at least 12 characters"]
+
+  responses:
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationErrorResponse'
+
+    Unauthorized:
+      description: Unauthorized - missing or invalid JWT token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: Unauthorized
+            correlationId: 123e4567-e89b-12d3-a456-426614174000
+
+    Forbidden:
+      description: Forbidden - user lacks required permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: Forbidden - insufficient permissions
+            correlationId: 123e4567-e89b-12d3-a456-426614174000

@@ -1,0 +1,437 @@
+openapi: 3.0.3
+info:
+  title: Task Management - Tasks API
+  version: 1.0.0
+  description: Task management endpoints for Kanban board, CRUD operations, assignment, comments
+
+servers:
+  - url: https://api.taskmanagement.local/api/v1
+  - url: https://api.taskmanagement.app/api/v1
+
+paths:
+  /projects/{projectId}/tasks:
+    get:
+      summary: Get all tasks for project (Kanban board)
+      operationId: getProjectTasks
+      tags: [Tasks]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [ToDo, InProgress, InReview, Done]
+        - name: assigneeId
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of tasks grouped by status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  toDo:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TaskCard'
+                  inProgress:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TaskCard'
+                  inReview:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TaskCard'
+                  done:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TaskCard'
+
+    post:
+      summary: Create new task
+      operationId: createTask
+      tags: [Tasks]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                description:
+                  type: string
+                  maxLength: 5000
+                  nullable: true
+                assigneeId:
+                  type: string
+                  format: uuid
+                  nullable: true
+                priority:
+                  type: string
+                  enum: [Low, Medium, High]
+                  default: Medium
+                dueDate:
+                  type: string
+                  format: date-time
+                  nullable: true
+      responses:
+        '201':
+          description: Task created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskDetail'
+
+  /tasks/{taskId}:
+    get:
+      summary: Get task details
+      operationId: getTask
+      tags: [Tasks]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      responses:
+        '200':
+          description: Task details with comments
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskDetail'
+
+    put:
+      summary: Update task
+      operationId: updateTask
+      tags: [Tasks]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                description:
+                  type: string
+                  maxLength: 5000
+                priority:
+                  type: string
+                  enum: [Low, Medium, High]
+                dueDate:
+                  type: string
+                  format: date-time
+                  nullable: true
+      responses:
+        '200':
+          description: Task updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskDetail'
+
+    delete:
+      summary: Delete task (soft delete)
+      operationId: deleteTask
+      tags: [Tasks]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      responses:
+        '204':
+          description: Task deleted
+
+  /tasks/{taskId}/status:
+    patch:
+      summary: Update task status (Kanban drag-drop)
+      operationId: updateTaskStatus
+      tags: [Tasks]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [ToDo, InProgress, InReview, Done]
+      responses:
+        '200':
+          description: Task status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskCard'
+
+  /tasks/{taskId}/assign:
+    patch:
+      summary: Assign/reassign task to user
+      operationId: assignTask
+      tags: [Tasks]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [assigneeId]
+              properties:
+                assigneeId:
+                  type: string
+                  format: uuid
+                  nullable: true
+                  description: User ID to assign, or null to unassign
+      responses:
+        '200':
+          description: Task assigned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskCard'
+
+  /tasks/{taskId}/comments:
+    get:
+      summary: Get all comments for task
+      operationId: getTaskComments
+      tags: [Tasks]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      responses:
+        '200':
+          description: List of comments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+
+    post:
+      summary: Add comment to task
+      operationId: addComment
+      tags: [Tasks]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                content:
+                  type: string
+                  minLength: 1
+                  maxLength: 5000
+      responses:
+        '201':
+          description: Comment added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+
+  /tasks/{taskId}/history:
+    get:
+      summary: Get task change history (audit trail)
+      operationId: getTaskHistory
+      tags: [Tasks]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      responses:
+        '200':
+          description: Task history records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskHistoryRecord'
+
+  /users/me/tasks:
+    get:
+      summary: Get tasks assigned to current user
+      operationId: getMyTasks
+      tags: [Tasks]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [ToDo, InProgress, InReview, Done]
+      responses:
+        '200':
+          description: User's assigned tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskCard'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    TaskId:
+      name: taskId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: Task unique identifier
+
+  schemas:
+    TaskCard:
+      type: object
+      description: Minimal task representation for Kanban board
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        status:
+          type: string
+          enum: [ToDo, InProgress, InReview, Done]
+        priority:
+          type: string
+          enum: [Low, Medium, High]
+        assignee:
+          $ref: '#/components/schemas/UserSummary'
+        dueDate:
+          type: string
+          format: date-time
+          nullable: true
+        commentCount:
+          type: integer
+        isOverdue:
+          type: boolean
+
+    TaskDetail:
+      allOf:
+        - $ref: '#/components/schemas/TaskCard'
+        - type: object
+          properties:
+            description:
+              type: string
+              nullable: true
+            projectId:
+              type: integer
+            projectName:
+              type: string
+            createdBy:
+              $ref: '#/components/schemas/UserSummary'
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+            comments:
+              type: array
+              items:
+                $ref: '#/components/schemas/Comment'
+
+    Comment:
+      type: object
+      properties:
+        id:
+          type: integer
+        content:
+          type: string
+        author:
+          $ref: '#/components/schemas/UserSummary'
+        createdAt:
+          type: string
+          format: date-time
+        editedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    TaskHistoryRecord:
+      type: object
+      properties:
+        id:
+          type: integer
+        changeType:
+          type: string
+          enum: [StatusChanged, AssigneeChanged, TitleChanged, DescriptionChanged, PriorityChanged, DueDateChanged]
+        oldValue:
+          type: string
+          nullable: true
+        newValue:
+          type: string
+          nullable: true
+        changedBy:
+          $ref: '#/components/schemas/UserSummary'
+        changedAt:
+          type: string
+          format: date-time
+
+    UserSummary:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+        email:
+          type: string
+        profilePictureUrl:
+          type: string
+          nullable: true
