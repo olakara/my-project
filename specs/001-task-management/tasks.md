@@ -181,10 +181,10 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Invite Member Feature
 
-- [ ] T067 [US2] Create invite member DTOs in `backend/src/TaskManagement.Api/Features/Projects/InviteMember/InviteMemberRequest.cs` with email, role
-- [ ] T068 [US2] Create invite validator in `backend/src/TaskManagement.Api/Features/Projects/InviteMember/InviteMemberValidator.cs` validating email format, role, authorization (Owner/Manager)
-- [ ] T069 [P] [US2] Create invite service in `backend/src/TaskManagement.Api/Features/Projects/InviteMember/InviteMemberService.cs` creating invitation, sending email, logging audit
-- [ ] T070 [US2] Create invite endpoint in `backend/src/TaskManagement.Api/Features/Projects/InviteMember/InviteMemberEndpoint.cs` as POST `/api/v1/projects/{projectId}/invitations` returning 201
+ [X] T067 [US2] Create invite member DTOs in `backend/src/TaskManagement.Api/Features/Projects/InviteMember/InviteMemberRequest.cs` with email, role
+ [X] T068 [US2] Create invite validator in `backend/src/TaskManagement.Api/Features/Projects/InviteMember/InviteMemberValidator.cs` validating email format, role, authorization (Owner/Manager)
+ [X] T069 [P] [US2] Create invite service in `backend/src/TaskManagement.Api/Features/Projects/InviteMember/InviteMemberService.cs` creating invitation, sending email, logging audit
+ [X] T070 [US2] Create invite endpoint in `backend/src/TaskManagement.Api/Features/Projects/InviteMember/InviteMemberEndpoint.cs` as POST `/api/v1/projects/{projectId}/invitations` returning 201
 
 ### Remove Member Feature
 

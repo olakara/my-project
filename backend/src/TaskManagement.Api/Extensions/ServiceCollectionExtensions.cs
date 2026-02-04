@@ -12,6 +12,7 @@ using TaskManagement.Api.Features.Projects.CreateProject;
 using TaskManagement.Api.Features.Projects.GetProjects;
 using TaskManagement.Api.Features.Projects.GetProject;
 using TaskManagement.Api.Features.Projects.UpdateProject;
+using TaskManagement.Api.Features.Projects.InviteMember;
 
 namespace TaskManagement.Api.Extensions;
 
@@ -43,6 +44,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IGetProjectsService, GetProjectsService>();
         services.AddScoped<IGetProjectService, GetProjectService>();
         services.AddScoped<IUpdateProjectService, UpdateProjectService>();
+        services.AddScoped<IInviteMemberService, InviteMemberService>();
 
         // Authentication
         var jwtSettings = configuration.GetSection("Jwt");
