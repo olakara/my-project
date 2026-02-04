@@ -1,4 +1,5 @@
 using TaskManagement.Api.Domain.Tasks;
+using DomainTaskStatus = TaskManagement.Api.Domain.Tasks.TaskStatus;
 
 namespace TaskManagement.Api.Features.Tasks.GetTask;
 
@@ -9,7 +10,7 @@ public class GetTaskResponse
     public string ProjectName { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
     public string? Description { get; set; }
-    public TaskStatus Status { get; set; }
+    public DomainTaskStatus Status { get; set; }
     public TaskPriority Priority { get; set; }
     public UserSummaryResponse? Assignee { get; set; }
     public UserSummaryResponse CreatedBy { get; set; } = new();

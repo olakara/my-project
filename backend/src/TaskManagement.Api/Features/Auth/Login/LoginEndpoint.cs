@@ -19,6 +19,7 @@ public static class LoginEndpoint
         LoginRequest request,
         ILoginService loginService,
         IValidator<LoginRequest> validator,
+        HttpContext httpContext,
         ILogger<LoginResponse> logger,
         CancellationToken ct)
     {
@@ -42,25 +43,14 @@ public static class LoginEndpoint
                 Expires = response.RefreshTokenExpiry
             };
 
-            // Create result without refresh token in body (sent as cookie instead)
-            var responseBody = new
-            {
-                response.UserId,
-                response.Email,
-                response.FirstName,
-                response.LastName,
-                response.AccessToken,
-                response.RefreshTokenExpiry
-            };
+            httpContext.Response.Cookies.Append("RefreshToken", response.RefreshToken, cookieOptions);
 
-            var result = Results.Ok(responseBody);
-            // Note: Cookie setting should be done in middleware or use a custom result
-            return result;
+            return Results.Ok(response);
         }
         catch (UnauthorizedAccessException ex)
         {
             logger.LogWarning(ex, "Login failed: {Message}", ex.Message);
-            return Results.Unauthorized();
+            return Results.BadRequest(new { error = ex.Message });
         }
     }
 }

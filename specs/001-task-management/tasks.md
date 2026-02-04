@@ -244,10 +244,10 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Update Task Details Feature
 
-- [ ] T099 [US3] Create update task DTOs in `backend/src/TaskManagement.Api/Features/Tasks/UpdateTask/UpdateTaskRequest.cs` with editable properties
-- [ ] T100 [US3] Create update validator in `backend/src/TaskManagement.Api/Features/Tasks/UpdateTask/UpdateTaskValidator.cs` validating field lengths, authorization (creator or manager)
-- [ ] T101 [P] [US3] Create update task service in `backend/src/TaskManagement.Api/Features/Tasks/UpdateTask/UpdateTaskService.cs` updating fields, recording changes in history
-- [ ] T102 [US3] Create update task endpoint in `backend/src/TaskManagement.Api/Features/Tasks/UpdateTask/UpdateTaskEndpoint.cs` as PUT `/api/v1/tasks/{taskId}` requiring [Authorize] returning 200
+- [X] T099 [US3] Create update task DTOs in `backend/src/TaskManagement.Api/Features/Tasks/UpdateTask/UpdateTaskRequest.cs` with editable properties
+- [X] T100 [US3] Create update validator in `backend/src/TaskManagement.Api/Features/Tasks/UpdateTask/UpdateTaskValidator.cs` validating field lengths, authorization (creator or manager)
+- [X] T101 [P] [US3] Create update task service in `backend/src/TaskManagement.Api/Features/Tasks/UpdateTask/UpdateTaskService.cs` updating fields, recording changes in history
+- [X] T102 [US3] Create update task endpoint in `backend/src/TaskManagement.Api/Features/Tasks/UpdateTask/UpdateTaskEndpoint.cs` as PUT `/api/v1/tasks/{taskId}` requiring [Authorize] returning 200
 
 ### Kanban Tests
 

@@ -38,19 +38,22 @@ public class JwtTokenService : IJwtTokenService
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret ?? throw new InvalidOperationException("JWT Secret not configured")));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
+        var now = DateTime.UtcNow;
         var claims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id),
             new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
             new Claim(ClaimTypes.Name, user.FullName),
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id)
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(JwtRegisteredClaimNames.Iat, new DateTimeOffset(now).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
         };
 
         var token = new JwtSecurityToken(
             issuer: issuer,
             audience: audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(expirationMinutes),
+            expires: now.AddMinutes(expirationMinutes),
             signingCredentials: creds
         );
 
