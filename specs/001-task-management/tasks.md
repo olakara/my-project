@@ -188,8 +188,8 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Remove Member Feature
 
-- [ ] T071 [US2] Create remove member service in `backend/src/TaskManagement.Api/Features/Projects/RemoveMember/RemoveMemberService.cs` with authorization check, reassigning tasks, logging audit
-- [ ] T072 [P] [US2] Create remove member endpoint in `backend/src/TaskManagement.Api/Features/Projects/RemoveMember/RemoveMemberEndpoint.cs` as DELETE `/api/v1/projects/{projectId}/members/{userId}` requiring [Authorize] returning 204
+- [X] T071 [US2] Create remove member service in `backend/src/TaskManagement.Api/Features/Projects/RemoveMember/RemoveMemberService.cs` with authorization check, reassigning tasks, logging audit
+- [X] T072 [P] [US2] Create remove member endpoint in `backend/src/TaskManagement.Api/Features/Projects/RemoveMember/RemoveMemberEndpoint.cs` as DELETE `/api/v1/projects/{projectId}/members/{userId}` requiring [Authorize] returning 204
 
 ### Accept Invitation Feature
 

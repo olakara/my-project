@@ -8,6 +8,7 @@ using TaskManagement.Api.Features.Projects.GetProjects;
 using TaskManagement.Api.Features.Projects.GetProject;
 using TaskManagement.Api.Features.Projects.UpdateProject;
 using TaskManagement.Api.Features.Projects.InviteMember;
+using TaskManagement.Api.Features.Projects.RemoveMember;
 
 namespace TaskManagement.Api.Extensions;
 
@@ -60,6 +61,7 @@ public static class WebApplicationExtensions
         app.MapGetProjectEndpoint();
         app.MapUpdateProjectEndpoint();
         app.MapInviteMemberEndpoint();
+        app.MapRemoveMemberEndpoint();
 
         return app;
     }
