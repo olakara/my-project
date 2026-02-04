@@ -219,10 +219,10 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Create Task Feature
 
-- [ ] T086 [US3] Create task DTOs in `backend/src/TaskManagement.Api/Features/Tasks/CreateTask/CreateTaskRequest.cs` and `CreateTaskResponse.cs` with title, description, assigneeId, priority, dueDate
-- [ ] T087 [US3] Create task validator in `backend/src/TaskManagement.Api/Features/Tasks/CreateTask/CreateTaskValidator.cs` validating title (1-200 chars), description max, assignee exists in project, due date in future
-- [ ] T088 [P] [US3] Create task service in `backend/src/TaskManagement.Api/Features/Tasks/CreateTask/CreateTaskService.cs` creating task, recording history, broadcasting update via SignalR
-- [ ] T089 [US3] Create task endpoint in `backend/src/TaskManagement.Api/Features/Tasks/CreateTask/CreateTaskEndpoint.cs` as POST `/api/v1/projects/{projectId}/tasks` requiring [Authorize] returning 201
+- [X] T086 [US3] Create task DTOs in `backend/src/TaskManagement.Api/Features/Tasks/CreateTask/CreateTaskRequest.cs` and `CreateTaskResponse.cs` with title, description, assigneeId, priority, dueDate
+- [X] T087 [US3] Create task validator in `backend/src/TaskManagement.Api/Features/Tasks/CreateTask/CreateTaskValidator.cs` validating title (1-200 chars), description max, assignee exists in project, due date in future
+- [X] T088 [P] [US3] Create task service in `backend/src/TaskManagement.Api/Features/Tasks/CreateTask/CreateTaskService.cs` creating task, recording history, broadcasting update via SignalR
+- [X] T089 [US3] Create task endpoint in `backend/src/TaskManagement.Api/Features/Tasks/CreateTask/CreateTaskEndpoint.cs` as POST `/api/v1/projects/{projectId}/tasks` requiring [Authorize] returning 201
 
 ### Get Kanban Board Feature
 
