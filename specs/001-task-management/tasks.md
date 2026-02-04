@@ -193,9 +193,9 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Accept Invitation Feature
 
-- [ ] T073 [US2] Create accept invitation DTOs in `backend/src/TaskManagement.Api/Features/Projects/AcceptInvitation/AcceptInvitationRequest.cs`
-- [ ] T074 [P] [US2] Create accept invitation service in `backend/src/TaskManagement.Api/Features/Projects/AcceptInvitation/AcceptInvitationService.cs` updating invitation status, creating project member, logging audit
-- [ ] T075 [US2] Create accept invitation endpoint in `backend/src/TaskManagement.Api/Features/Projects/AcceptInvitation/AcceptInvitationEndpoint.cs` as POST `/api/v1/invitations/{invitationId}/accept` requiring [Authorize] returning 200
+- [X] T073 [US2] Create accept invitation DTOs in `backend/src/TaskManagement.Api/Features/Projects/AcceptInvitation/AcceptInvitationRequest.cs`
+- [X] T074 [P] [US2] Create accept invitation service in `backend/src/TaskManagement.Api/Features/Projects/AcceptInvitation/AcceptInvitationService.cs` updating invitation status, creating project member, logging audit
+- [X] T075 [US2] Create accept invitation endpoint in `backend/src/TaskManagement.Api/Features/Projects/AcceptInvitation/AcceptInvitationEndpoint.cs` as POST `/api/v1/invitations/{invitationId}/accept` requiring [Authorize] returning 200
 
 ### Project Tests
 
