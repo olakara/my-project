@@ -226,8 +226,8 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Get Kanban Board Feature
 
-- [ ] T090 [P] [US3] Create get kanban board service in `backend/src/TaskManagement.Api/Features/Tasks/GetKanbanBoard/GetKanbanBoardService.cs` querying all tasks grouped by status with optional filters, applying pagination
-- [ ] T091 [US3] Create get kanban board endpoint in `backend/src/TaskManagement.Api/Features/Tasks/GetKanbanBoard/GetKanbanBoardEndpoint.cs` as GET `/api/v1/projects/{projectId}/tasks` with query params for filters returning 200 with tasks grouped by status
+- [X] T090 [P] [US3] Create get kanban board service in `backend/src/TaskManagement.Api/Features/Tasks/GetKanbanBoard/GetKanbanBoardService.cs` querying all tasks grouped by status with optional filters, applying pagination
+- [X] T091 [US3] Create get kanban board endpoint in `backend/src/TaskManagement.Api/Features/Tasks/GetKanbanBoard/GetKanbanBoardEndpoint.cs` as GET `/api/v1/projects/{projectId}/tasks` with query params for filters returning 200 with tasks grouped by status
 
 ### Get Task Details Feature
 
@@ -237,10 +237,10 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Update Task Status Feature
 
-- [ ] T095 [US3] Create update task status DTOs in `backend/src/TaskManagement.Api/Features/Tasks/UpdateTaskStatus/UpdateTaskStatusRequest.cs` with newStatus field
-- [ ] T096 [US3] Create status validator in `backend/src/TaskManagement.Api/Features/Tasks/UpdateTaskStatus/UpdateTaskStatusValidator.cs` validating status is valid enum value, authorization
-- [ ] T097 [P] [US3] Create update status service in `backend/src/TaskManagement.Api/Features/Tasks/UpdateTaskStatus/UpdateTaskStatusService.cs` changing status, recording history entry, broadcasting update
-- [ ] T098 [US3] Create update status endpoint in `backend/src/TaskManagement.Api/Features/Tasks/UpdateTaskStatus/UpdateTaskStatusEndpoint.cs` as PATCH `/api/v1/tasks/{taskId}/status` requiring [Authorize] returning 200
+- [X] T095 [US3] Create update task status DTOs in `backend/src/TaskManagement.Api/Features/Tasks/UpdateTaskStatus/UpdateTaskStatusRequest.cs` with newStatus field
+- [X] T096 [US3] Create status validator in `backend/src/TaskManagement.Api/Features/Tasks/UpdateTaskStatus/UpdateTaskStatusValidator.cs` validating status is valid enum value, authorization
+- [X] T097 [P] [US3] Create update status service in `backend/src/TaskManagement.Api/Features/Tasks/UpdateTaskStatus/UpdateTaskStatusService.cs` changing status, recording history entry, broadcasting update
+- [X] T098 [US3] Create update status endpoint in `backend/src/TaskManagement.Api/Features/Tasks/UpdateTaskStatus/UpdateTaskStatusEndpoint.cs` as PATCH `/api/v1/tasks/{taskId}/status` requiring [Authorize] returning 200
 
 ### Update Task Details Feature
 
@@ -251,22 +251,22 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Kanban Tests
 
-- [ ] T103 [US3] Create task CRUD tests in `backend/tests/TaskManagement.Api.Tests/Features/Tasks/TaskServiceTests.cs` testing create, read, status update with authorization
-- [ ] T104 [P] [US3] Create kanban board tests in `backend/tests/TaskManagement.IntegrationTests/Tasks/KanbanIntegrationTests.cs` testing drag-drop status update, filtering, pagination
+- [X] T103 [US3] Create task CRUD tests in `backend/tests/TaskManagement.Api.Tests/Features/Tasks/TaskServiceTests.cs` testing create, read, status update with authorization
+- [X] T104 [P] [US3] Create kanban board tests in `backend/tests/TaskManagement.IntegrationTests/Tasks/KanbanIntegrationTests.cs` testing drag-drop status update, filtering, pagination
 
 ### Frontend Kanban
 
-- [ ] T105 [US3] Create task types in `frontend/src/types/task.types.ts` defining Task, TaskStatus, TaskPriority interfaces
-- [ ] T106 [P] [US3] Create tasks API client in `frontend/src/services/api/tasksApi.ts` with methods for CRUD, status update, filtering, kanban board queries
-- [ ] T107 [US3] Create Zustand tasks store in `frontend/src/store/tasksStore.ts` managing tasks, filters, sorting
-- [ ] T108 [P] [US3] Create useTasks hook in `frontend/src/hooks/useTasks.ts` wrapping React Query queries for tasks with real-time sync support
-- [ ] T109 [US3] Create kanban board page in `frontend/src/pages/tasks/KanbanPage.tsx` rendering board with columns and task cards
-- [ ] T110 [P] [US3] Create kanban board component in `frontend/src/components/kanban/KanbanBoard.tsx` with drag-drop via react-beautiful-dnd, column layout
-- [ ] T111 [US3] Create kanban column component in `frontend/src/components/kanban/KanbanColumn.tsx` rendering task list for status with drop zone
-- [ ] T112 [P] [US3] Create draggable task card in `frontend/src/components/kanban/DraggableTask.tsx` with drag handle, click to open detail
-- [ ] T113 [US3] Create task card component in `frontend/src/components/tasks/TaskCard.tsx` showing title, assignee, priority, due date
-- [ ] T114 [P] [US3] Create task detail modal in `frontend/src/components/tasks/TaskDetail.tsx` displaying full task info, comments, history, edit button
-- [ ] T115 [US3] Create task form component in `frontend/src/components/tasks/TaskForm.tsx` with inputs for title, description, assignee, priority, due date
+- [X] T105 [US3] Create task types in `frontend/src/types/task.types.ts` defining Task, TaskStatus, TaskPriority interfaces
+- [X] T106 [P] [US3] Create tasks API client in `frontend/src/services/api/tasksApi.ts` with methods for CRUD, status update, filtering, kanban board queries
+- [X] T107 [US3] Create Zustand tasks store in `frontend/src/store/tasksStore.ts` managing tasks, filters, sorting
+- [X] T108 [P] [US3] Create useTasks hook in `frontend/src/hooks/useTasks.ts` wrapping React Query queries for tasks with real-time sync support
+- [X] T109 [US3] Create kanban board page in `frontend/src/pages/tasks/KanbanPage.tsx` rendering board with columns and task cards
+- [X] T110 [P] [US3] Create kanban board component in `frontend/src/components/kanban/KanbanBoard.tsx` with drag-drop via react-beautiful-dnd, column layout
+- [X] T111 [US3] Create kanban column component in `frontend/src/components/kanban/KanbanColumn.tsx` rendering task list for status with drop zone
+- [X] T112 [P] [US3] Create draggable task card in `frontend/src/components/kanban/DraggableTask.tsx` with drag handle, click to open detail
+- [X] T113 [US3] Create task card component in `frontend/src/components/tasks/TaskCard.tsx` showing title, assignee, priority, due date
+- [X] T114 [P] [US3] Create task detail modal in `frontend/src/components/tasks/TaskDetail.tsx` displaying full task info, comments, history, edit button
+- [X] T115 [US3] Create task form component in `frontend/src/components/tasks/TaskForm.tsx` with inputs for title, description, assignee, priority, due date
 
 ---
 
