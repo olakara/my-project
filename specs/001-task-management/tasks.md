@@ -204,16 +204,7 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Frontend Projects
 
-- [ ] T078 [US2] Create project types in `frontend/src/types/project.types.ts` defining Project, ProjectMember, ProjectRole, ProjectInvitation interfaces
-- [ ] T079 [P] [US2] Create projects API client in `frontend/src/services/api/projectsApi.ts` with methods for CRUD, invitations, member management
-- [ ] T080 [US2] Create Zustand projects store in `frontend/src/store/projectsStore.ts` managing projects, current project, members list with actions
-- [ ] T081 [P] [US2] Create useProjects hook in `frontend/src/hooks/useProjects.ts` wrapping React Query queries for projects with caching
-- [ ] T082 [US2] Create projects list page in `frontend/src/pages/projects/ProjectsListPage.tsx` displaying user's projects with create/edit buttons
-- [ ] T083 [P] [US2] Create project detail page in `frontend/src/pages/projects/ProjectDetailPage.tsx` showing project info, members list, invite button, settings
-- [ ] T084 [US2] Create project form component in `frontend/src/components/projects/ProjectForm.tsx` with name/description inputs, validation
-- [ ] T085 [US2] Create team member list component in `frontend/src/components/projects/TeamMemberList.tsx` displaying members with roles, invite/remove buttons
 
----
 
 ## Phase 5: User Story 3 - Kanban Board with Tasks (P1)
 
