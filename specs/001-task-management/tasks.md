@@ -199,8 +199,8 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Project Tests
 
-- [ ] T076 [US2] Create project CRUD unit tests in `backend/tests/TaskManagement.Api.Tests/Features/Projects/ProjectServiceTests.cs` testing create, read, update with authorization checks
-- [ ] T077 [P] [US2] Create project integration tests in `backend/tests/TaskManagement.IntegrationTests/Projects/ProjectIntegrationTests.cs` testing create project → invite member → accept invitation → view members
+- [X] T076 [US2] Create project CRUD unit tests in `backend/tests/TaskManagement.Api.Tests/Features/Projects/ProjectServiceTests.cs` testing create, read, update with authorization checks
+- [X] T077 [P] [US2] Create project integration tests in `backend/tests/TaskManagement.IntegrationTests/Projects/ProjectIntegrationTests.cs` testing create project → invite member → accept invitation → view members
 
 ### Frontend Projects
 
