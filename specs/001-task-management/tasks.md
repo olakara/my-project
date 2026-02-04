@@ -231,9 +231,9 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Get Task Details Feature
 
-- [ ] T092 [US3] Create task detail response DTO in `backend/src/TaskManagement.Api/Features/Tasks/GetTask/GetTaskResponse.cs` including all task properties, assignee details, comments count, history preview
-- [ ] T093 [P] [US3] Create get task service in `backend/src/TaskManagement.Api/Features/Tasks/GetTask/GetTaskService.cs` with authorization check (user must be project member)
-- [ ] T094 [US3] Create get task endpoint in `backend/src/TaskManagement.Api/Features/Tasks/GetTask/GetTaskEndpoint.cs` as GET `/api/v1/tasks/{taskId}` requiring [Authorize] returning 200
+- [X] T092 [US3] Create task detail response DTO in `backend/src/TaskManagement.Api/Features/Tasks/GetTask/GetTaskResponse.cs` including all task properties, assignee details, comments count, history preview
+- [X] T093 [P] [US3] Create get task service in `backend/src/TaskManagement.Api/Features/Tasks/GetTask/GetTaskService.cs` with authorization check (user must be project member)
+- [X] T094 [US3] Create get task endpoint in `backend/src/TaskManagement.Api/Features/Tasks/GetTask/GetTaskEndpoint.cs` as GET `/api/v1/tasks/{taskId}` requiring [Authorize] returning 200
 
 ### Update Task Status Feature
 

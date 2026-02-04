@@ -11,6 +11,7 @@ using TaskManagement.Api.Features.Projects.InviteMember;
 using TaskManagement.Api.Features.Projects.RemoveMember;
 using TaskManagement.Api.Features.Projects.AcceptInvitation;
 using TaskManagement.Api.Features.Tasks.CreateTask;
+using TaskManagement.Api.Features.Tasks.GetTask;
 
 namespace TaskManagement.Api.Extensions;
 
@@ -66,6 +67,7 @@ public static class WebApplicationExtensions
         app.MapRemoveMemberEndpoint();
         app.MapAcceptInvitationEndpoint();
         app.MapCreateTaskEndpoint();
+        app.MapGetTaskEndpoint();
 
         return app;
     }

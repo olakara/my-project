@@ -21,6 +21,7 @@ public class TaskRepository : ITaskRepository
             .Include(t => t.Comments)
                 .ThenInclude(c => c.Author)
             .Include(t => t.History)
+                .ThenInclude(h => h.ChangedByUser)
             .FirstOrDefaultAsync(t => t.Id == id, ct);
     }
 
