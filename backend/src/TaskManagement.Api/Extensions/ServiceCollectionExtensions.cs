@@ -8,6 +8,10 @@ using TaskManagement.Api.Features.Auth.Register;
 using TaskManagement.Api.Features.Auth.Login;
 using TaskManagement.Api.Features.Auth.RefreshToken;
 using TaskManagement.Api.Features.Auth.Logout;
+using TaskManagement.Api.Features.Projects.CreateProject;
+using TaskManagement.Api.Features.Projects.GetProjects;
+using TaskManagement.Api.Features.Projects.GetProject;
+using TaskManagement.Api.Features.Projects.UpdateProject;
 
 namespace TaskManagement.Api.Extensions;
 
@@ -25,12 +29,20 @@ public static class ServiceCollectionExtensions
 
         // Services
         services.AddScoped<IJwtTokenService, JwtTokenService>();
+
+        services.AddHttpContextAccessor();
         
         // Auth Feature Services
         services.AddScoped<IRegisterService, RegisterService>();
         services.AddScoped<ILoginService, LoginService>();
         services.AddScoped<IRefreshTokenService, RefreshTokenService>();
         services.AddScoped<ILogoutService, LogoutService>();
+
+        // Project Feature Services
+        services.AddScoped<ICreateProjectService, CreateProjectService>();
+        services.AddScoped<IGetProjectsService, GetProjectsService>();
+        services.AddScoped<IGetProjectService, GetProjectService>();
+        services.AddScoped<IUpdateProjectService, UpdateProjectService>();
 
         // Authentication
         var jwtSettings = configuration.GetSection("Jwt");

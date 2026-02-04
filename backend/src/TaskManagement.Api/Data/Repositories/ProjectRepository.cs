@@ -28,6 +28,7 @@ public class ProjectRepository : IProjectRepository
             .Where(p => p.Members.Any(m => m.UserId == userId) || p.OwnerId == userId)
             .Include(p => p.Owner)
             .Include(p => p.Members)
+            .Include(p => p.Tasks)
             .OrderByDescending(p => p.CreatedTimestamp)
             .ToListAsync(ct);
     }

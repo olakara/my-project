@@ -152,31 +152,32 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Backend Domain & Data
 
-- [ ] T054 [P] Create ProjectInvitation entity in `backend/src/TaskManagement.Api/Domain/Projects/ProjectInvitation.cs` with email, project reference, inviter, role, status enum (Pending/Accepted/Declined), expiration timestamp
+- [X] T054 [P] Create ProjectInvitation entity in `backend/src/TaskManagement.Api/Domain/Projects/ProjectInvitation.cs` with email, project reference, inviter, role, status enum (Pending/Accepted/Declined), expiration timestamp
 
 ### Create Project Feature
 
-- [ ] T055 [US2] Create project DTOs in `backend/src/TaskManagement.Api/Features/Projects/CreateProject/CreateProjectRequest.cs` and `CreateProjectResponse.cs` with name, description properties
-- [ ] T056 [US2] Create project validator in `backend/src/TaskManagement.Api/Features/Projects/CreateProject/CreateProjectValidator.cs` validating name length, owner verification
-- [ ] T057 [P] [US2] Create project service in `backend/src/TaskManagement.Api/Features/Projects/CreateProject/CreateProjectService.cs` creating project, adding creator as Owner member, logging audit event
-- [ ] T058 [US2] Create project endpoint in `backend/src/TaskManagement.Api/Features/Projects/CreateProject/CreateProjectEndpoint.cs` as POST `/api/v1/projects` requiring [Authorize] returning 201 with project details
+- [X] T055 [US2] Create project DTOs in `backend/src/TaskManagement.Api/Features/Projects/CreateProject/CreateProjectRequest.cs` and `CreateProjectResponse.cs` with name, description properties
+
+- [X] T056 [US2] Create project validator in `backend/src/TaskManagement.Api/Features/Projects/CreateProject/CreateProjectValidator.cs` validating name length, owner verification
+- [X] T057 [P] [US2] Create project service in `backend/src/TaskManagement.Api/Features/Projects/CreateProject/CreateProjectService.cs` creating project, adding creator as Owner member, logging audit event
+- [X] T058 [US2] Create project endpoint in `backend/src/TaskManagement.Api/Features/Projects/CreateProject/CreateProjectEndpoint.cs` as POST `/api/v1/projects` requiring [Authorize] returning 201 with project details
 
 ### Get Projects Feature
 
-- [ ] T059 [P] [US2] Create get projects service in `backend/src/TaskManagement.Api/Features/Projects/GetProjects/GetProjectsService.cs` querying projects where user is member, including members count
-- [ ] T060 [US2] Create get projects endpoint in `backend/src/TaskManagement.Api/Features/Projects/GetProjects/GetProjectsEndpoint.cs` as GET `/api/v1/projects` requiring [Authorize] returning 200 with projects list
+- [X] T059 [P] [US2] Create get projects service in `backend/src/TaskManagement.Api/Features/Projects/GetProjects/GetProjectsService.cs` querying projects where user is member, including members count
+- [X] T060 [US2] Create get projects endpoint in `backend/src/TaskManagement.Api/Features/Projects/GetProjects/GetProjectsEndpoint.cs` as GET `/api/v1/projects` requiring [Authorize] returning 200 with projects list
 
 ### Get Project Details
 
-- [ ] T061 [P] [US2] Create get project service in `backend/src/TaskManagement.Api/Features/Projects/GetProject/GetProjectService.cs` with authorization check (user must be member)
-- [ ] T062 [US2] Create get project endpoint in `backend/src/TaskManagement.Api/Features/Projects/GetProject/GetProjectEndpoint.cs` as GET `/api/v1/projects/{projectId}` returning 200 with full project details including members
+- [X] T061 [P] [US2] Create get project service in `backend/src/TaskManagement.Api/Features/Projects/GetProject/GetProjectService.cs` with authorization check (user must be member)
+- [X] T062 [US2] Create get project endpoint in `backend/src/TaskManagement.Api/Features/Projects/GetProject/GetProjectEndpoint.cs` as GET `/api/v1/projects/{projectId}` returning 200 with full project details including members
 
 ### Update Project Feature
 
-- [ ] T063 [US2] Create update project DTOs in `backend/src/TaskManagement.Api/Features/Projects/UpdateProject/UpdateProjectRequest.cs` with name, description
-- [ ] T064 [US2] Create update validator in `backend/src/TaskManagement.Api/Features/Projects/UpdateProject/UpdateProjectValidator.cs` validating authorization (Owner/Manager only), field lengths
-- [ ] T065 [P] [US2] Create update project service in `backend/src/TaskManagement.Api/Features/Projects/UpdateProject/UpdateProjectService.cs` modifying project, logging change, broadcasting update to all members
-- [ ] T066 [US2] Create update project endpoint in `backend/src/TaskManagement.Api/Features/Projects/UpdateProject/UpdateProjectEndpoint.cs` as PUT `/api/v1/projects/{projectId}` requiring [Authorize] returning 200
+- [X] T063 [US2] Create update project DTOs in `backend/src/TaskManagement.Api/Features/Projects/UpdateProject/UpdateProjectRequest.cs` with name, description
+- [X] T064 [US2] Create update validator in `backend/src/TaskManagement.Api/Features/Projects/UpdateProject/UpdateProjectValidator.cs` validating authorization (Owner/Manager only), field lengths
+- [X] T065 [P] [US2] Create update project service in `backend/src/TaskManagement.Api/Features/Projects/UpdateProject/UpdateProjectService.cs` modifying project, logging change, broadcasting update to all members
+- [X] T066 [US2] Create update project endpoint in `backend/src/TaskManagement.Api/Features/Projects/UpdateProject/UpdateProjectEndpoint.cs` as PUT `/api/v1/projects/{projectId}` requiring [Authorize] returning 200
 
 ### Invite Member Feature
 

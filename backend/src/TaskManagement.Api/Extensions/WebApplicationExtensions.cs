@@ -3,6 +3,10 @@ using TaskManagement.Api.Features.Auth.Register;
 using TaskManagement.Api.Features.Auth.Login;
 using TaskManagement.Api.Features.Auth.RefreshToken;
 using TaskManagement.Api.Features.Auth.Logout;
+using TaskManagement.Api.Features.Projects.CreateProject;
+using TaskManagement.Api.Features.Projects.GetProjects;
+using TaskManagement.Api.Features.Projects.GetProject;
+using TaskManagement.Api.Features.Projects.UpdateProject;
 
 namespace TaskManagement.Api.Extensions;
 
@@ -50,6 +54,10 @@ public static class WebApplicationExtensions
         app.MapLoginEndpoint();
         app.MapRefreshTokenEndpoint();
         app.MapLogoutEndpoint();
+        app.MapCreateProjectEndpoint();
+        app.MapGetProjectsEndpoint();
+        app.MapGetProjectEndpoint();
+        app.MapUpdateProjectEndpoint();
 
         return app;
     }
