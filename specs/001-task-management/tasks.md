@@ -295,8 +295,8 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Assignment Tests
 
-- [ ] T122 [US4] Create assignment tests in `backend/tests/TaskManagement.Api.Tests/Features/Tasks/AssignmentServiceTests.cs` testing assignment, history recording, authorization
-- [ ] T123 [P] [US4] Create my tasks integration tests in `backend/tests/TaskManagement.IntegrationTests/Tasks/MyTasksIntegrationTests.cs` testing assignment flow and my tasks query
+- [X] T122 [US4] Create assignment tests in `backend/tests/TaskManagement.Api.Tests/Features/Tasks/AssignmentServiceTests.cs` testing assignment, history recording, authorization
+- [X] T123 [P] [US4] Create my tasks integration tests in `backend/tests/TaskManagement.IntegrationTests/Tasks/MyTasksIntegrationTests.cs` testing assignment flow and my tasks query
 
 ### Frontend Assignment
 
