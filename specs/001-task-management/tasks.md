@@ -290,8 +290,8 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Get My Tasks Feature
 
-- [ ] T120 [P] [US4] Create get my tasks service in `backend/src/TaskManagement.Api/Features/Tasks/GetMyTasks/GetMyTasksService.cs` querying all tasks assigned to current user with optional filters
-- [ ] T121 [US4] Create get my tasks endpoint in `backend/src/TaskManagement.Api/Features/Tasks/GetMyTasks/GetMyTasksEndpoint.cs` as GET `/api/v1/tasks/my-tasks` requiring [Authorize] returning 200
+- [X] T120 [P] [US4] Create get my tasks service in `backend/src/TaskManagement.Api/Features/Tasks/GetMyTasks/GetMyTasksService.cs` querying all tasks assigned to current user with optional filters
+- [X] T121 [US4] Create get my tasks endpoint in `backend/src/TaskManagement.Api/Features/Tasks/GetMyTasks/GetMyTasksEndpoint.cs` as GET `/api/v1/tasks/my-tasks` requiring [Authorize] returning 200
 
 ### Assignment Tests
 

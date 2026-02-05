@@ -22,7 +22,7 @@ namespace TaskManagement.Api.Tests.Features.Tasks;
 /// </summary>
 public class TaskServiceTests
 {
-    private readonly Mock<TaskManagementDbContext> _contextMock;
+    private readonly TaskManagementDbContext _context;
     private readonly Mock<ITaskRepository> _taskRepositoryMock;
     private readonly Mock<IProjectRepository> _projectRepositoryMock;
     private readonly Mock<ILogger<CreateTaskService>> _createTaskLoggerMock;
@@ -30,7 +30,10 @@ public class TaskServiceTests
 
     public TaskServiceTests()
     {
-        _contextMock = new Mock<TaskManagementDbContext>();
+        var options = new DbContextOptionsBuilder<TaskManagementDbContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+        _context = new TaskManagementDbContext(options);
         _taskRepositoryMock = new Mock<ITaskRepository>();
         _projectRepositoryMock = new Mock<IProjectRepository>();
         _createTaskLoggerMock = new Mock<ILogger<CreateTaskService>>();
@@ -53,17 +56,21 @@ public class TaskServiceTests
             DueDate = DateTime.UtcNow.AddDays(7)
         };
 
-        var user = new ApplicationUser { Id = userId, Email = "user@example.com" };
         var project = new Project { Id = projectId, Name = "Test Project", OwnerId = userId };
 
         _projectRepositoryMock.Setup(r => r.GetByIdAsync(projectId, default))
             .ReturnsAsync(project);
 
-        var mockDbSet = new Mock<DbSet<ProjectMember>>();
-        _contextMock.Setup(c => c.ProjectMembers).Returns(mockDbSet.Object);
+        _taskRepositoryMock
+            .Setup(r => r.CreateAsync(It.IsAny<DomainTask>(), default))
+            .ReturnsAsync((DomainTask task, CancellationToken ct) =>
+            {
+                task.Id = 1;
+                return task;
+            });
 
         var service = new CreateTaskService(
-            _contextMock.Object,
+            _context,
             _projectRepositoryMock.Object,
             _taskRepositoryMock.Object,
             _createTaskLoggerMock.Object);
@@ -91,7 +98,7 @@ public class TaskServiceTests
             .ReturnsAsync((Project?)null);
 
         var service = new CreateTaskService(
-            _contextMock.Object,
+            _context,
             _projectRepositoryMock.Object,
             _taskRepositoryMock.Object,
             _createTaskLoggerMock.Object);
@@ -191,16 +198,26 @@ public class TaskServiceTests
         _projectRepositoryMock.Setup(r => r.GetByIdAsync(projectId, default))
             .ReturnsAsync(project);
 
-        var mockProjectMembersDbSet = new Mock<DbSet<ProjectMember>>();
-        mockProjectMembersDbSet.Setup(d => d.AnyAsync(It.IsAny<System.Linq.Expressions.Expression<System.Func<ProjectMember, bool>>>(), default))
-            .ReturnsAsync(true);
-        _contextMock.Setup(c => c.ProjectMembers).Returns(mockProjectMembersDbSet.Object);
+        _context.ProjectMembers.Add(new ProjectMember
+        {
+            ProjectId = projectId,
+            UserId = userId,
+            Role = ProjectRole.Member,
+            JoinedTimestamp = DateTime.UtcNow
+        });
+        _context.Tasks.Add(task);
+        await _context.SaveChangesAsync();
 
-        var mockTaskHistoryDbSet = new Mock<DbSet<TaskHistory>>();
-        _contextMock.Setup(c => c.TaskHistory).Returns(mockTaskHistoryDbSet.Object);
+        _taskRepositoryMock
+            .Setup(r => r.UpdateAsync(task, default))
+            .Returns(async () =>
+            {
+                _context.Tasks.Update(task);
+                await _context.SaveChangesAsync();
+            });
 
         var service = new UpdateTaskStatusService(
-            _contextMock.Object,
+            _context,
             _taskRepositoryMock.Object,
             _projectRepositoryMock.Object,
             _updateStatusLoggerMock.Object);
@@ -213,7 +230,7 @@ public class TaskServiceTests
         result.Status.Should().Be(DomainTaskStatus.InProgress);
         task.Status.Should().Be(DomainTaskStatus.InProgress);
         _taskRepositoryMock.Verify(r => r.UpdateAsync(task, default), Times.Once);
-        mockTaskHistoryDbSet.Verify(d => d.Add(It.IsAny<TaskHistory>()), Times.Once);
+        _context.TaskHistory.Count().Should().Be(1);
     }
 
     [Fact]
@@ -244,13 +261,17 @@ public class TaskServiceTests
         _projectRepositoryMock.Setup(r => r.GetByIdAsync(projectId, default))
             .ReturnsAsync(project);
 
-        var mockProjectMembersDbSet = new Mock<DbSet<ProjectMember>>();
-        mockProjectMembersDbSet.Setup(d => d.AnyAsync(It.IsAny<System.Linq.Expressions.Expression<System.Func<ProjectMember, bool>>>(), default))
-            .ReturnsAsync(true);
-        _contextMock.Setup(c => c.ProjectMembers).Returns(mockProjectMembersDbSet.Object);
+        _context.ProjectMembers.Add(new ProjectMember
+        {
+            ProjectId = projectId,
+            UserId = userId,
+            Role = ProjectRole.Member,
+            JoinedTimestamp = DateTime.UtcNow
+        });
+        await _context.SaveChangesAsync();
 
         var service = new UpdateTaskStatusService(
-            _contextMock.Object,
+            _context,
             _taskRepositoryMock.Object,
             _projectRepositoryMock.Object,
             _updateStatusLoggerMock.Object);
@@ -288,13 +309,8 @@ public class TaskServiceTests
         _projectRepositoryMock.Setup(r => r.GetByIdAsync(projectId, default))
             .ReturnsAsync(project);
 
-        var mockProjectMembersDbSet = new Mock<DbSet<ProjectMember>>();
-        mockProjectMembersDbSet.Setup(d => d.AnyAsync(It.IsAny<System.Linq.Expressions.Expression<System.Func<ProjectMember, bool>>>(), default))
-            .ReturnsAsync(false);
-        _contextMock.Setup(c => c.ProjectMembers).Returns(mockProjectMembersDbSet.Object);
-
         var service = new UpdateTaskStatusService(
-            _contextMock.Object,
+            _context,
             _taskRepositoryMock.Object,
             _projectRepositoryMock.Object,
             _updateStatusLoggerMock.Object);
