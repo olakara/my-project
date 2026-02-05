@@ -300,9 +300,9 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Frontend Assignment
 
-- [ ] T124 [US4] Create assignee selector component in `frontend/src/components/tasks/AssigneeSelector.tsx` showing project members dropdown, handling assignment changes
-- [ ] T125 [P] [US4] Create my tasks page in `frontend/src/pages/tasks/MyTasksPage.tsx` displaying tasks assigned to current user with filters and status grouping
-- [ ] T126 [US4] Create useMyTasks hook in `frontend/src/hooks/useMyTasks.ts` wrapping React Query for my tasks queries with real-time updates
+- [X] T124 [US4] Create assignee selector component in `frontend/src/components/tasks/AssigneeSelector.tsx` showing project members dropdown, handling assignment changes
+- [X] T125 [P] [US4] Create my tasks page in `frontend/src/pages/tasks/MyTasksPage.tsx` displaying tasks assigned to current user with filters and status grouping
+- [X] T126 [US4] Create useMyTasks hook in `frontend/src/hooks/useMyTasks.ts` wrapping React Query for my tasks queries with real-time updates
 
 ---
 
