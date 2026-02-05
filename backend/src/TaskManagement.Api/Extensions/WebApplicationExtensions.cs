@@ -13,6 +13,7 @@ using TaskManagement.Api.Features.Projects.AcceptInvitation;
 using TaskManagement.Api.Features.Tasks.CreateTask;
 using TaskManagement.Api.Features.Tasks.GetTask;
 using TaskManagement.Api.Features.Tasks.UpdateTask;
+using TaskManagement.Api.Features.Tasks.AssignTask;
 
 namespace TaskManagement.Api.Extensions;
 
@@ -70,6 +71,7 @@ public static class WebApplicationExtensions
         app.MapCreateTaskEndpoint();
         app.MapGetTaskEndpoint();
         app.MapUpdateTaskEndpoint();
+        app.MapAssignTaskEndpoint();
 
         return app;
     }

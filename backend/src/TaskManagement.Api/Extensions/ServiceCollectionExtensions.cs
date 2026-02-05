@@ -18,6 +18,7 @@ using TaskManagement.Api.Features.Projects.AcceptInvitation;
 using TaskManagement.Api.Features.Tasks.CreateTask;
 using TaskManagement.Api.Features.Tasks.GetTask;
 using TaskManagement.Api.Features.Tasks.UpdateTask;
+using TaskManagement.Api.Features.Tasks.AssignTask;
 
 namespace TaskManagement.Api.Extensions;
 
@@ -55,6 +56,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICreateTaskService, CreateTaskService>();
         services.AddScoped<IGetTaskService, GetTaskService>();
         services.AddScoped<IUpdateTaskService, UpdateTaskService>();
+        services.AddScoped<IAssignTaskService, AssignTaskService>();
 
         // Authentication
         var jwtSettings = configuration.GetSection("Jwt");

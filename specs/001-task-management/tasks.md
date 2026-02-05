@@ -283,10 +283,10 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Assign Task Feature
 
-- [ ] T116 [US4] Create assign task DTOs in `backend/src/TaskManagement.Api/Features/Tasks/AssignTask/AssignTaskRequest.cs` with assigneeId
-- [ ] T117 [US4] Create assign validator in `backend/src/TaskManagement.Api/Features/Tasks/AssignTask/AssignTaskValidator.cs` validating assignee is project member, authorization
-- [ ] T118 [P] [US4] Create assign service in `backend/src/TaskManagement.Api/Features/Tasks/AssignTask/AssignTaskService.cs` updating assignee, recording history, creating notification, broadcasting update
-- [ ] T119 [US4] Create assign endpoint in `backend/src/TaskManagement.Api/Features/Tasks/AssignTask/AssignTaskEndpoint.cs` as PATCH `/api/v1/tasks/{taskId}/assign` requiring [Authorize] returning 200
+- [X] T116 [US4] Create assign task DTOs in `backend/src/TaskManagement.Api/Features/Tasks/AssignTask/AssignTaskRequest.cs` with assigneeId
+- [X] T117 [US4] Create assign validator in `backend/src/TaskManagement.Api/Features/Tasks/AssignTask/AssignTaskValidator.cs` validating assignee is project member, authorization
+- [X] T118 [P] [US4] Create assign service in `backend/src/TaskManagement.Api/Features/Tasks/AssignTask/AssignTaskService.cs` updating assignee, recording history, creating notification, broadcasting update
+- [X] T119 [US4] Create assign endpoint in `backend/src/TaskManagement.Api/Features/Tasks/AssignTask/AssignTaskEndpoint.cs` as PATCH `/api/v1/tasks/{taskId}/assign` requiring [Authorize] returning 200
 
 ### Get My Tasks Feature
 
