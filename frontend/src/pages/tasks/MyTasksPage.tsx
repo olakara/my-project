@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useMyTasks } from '../../hooks/useMyTasks';
-import { TaskPriority, TaskStatus } from '../../types/task.types';
+import { TaskPriority, TaskStatus, Task } from '../../types/task.types';
 
 const statusOrder: TaskStatus[] = [
   TaskStatus.ToDo,

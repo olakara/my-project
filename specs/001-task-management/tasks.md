@@ -338,12 +338,12 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Frontend SignalR Integration
 
-- [ ] T137 [US5] Create SignalR service in `frontend/src/services/signalr/signalrService.ts` managing hub connection, authentication, reconnection logic, event subscriptions
-- [ ] T138 [P] [US5] Create useRealtime hook in `frontend/src/hooks/useRealtime.ts` providing real-time event subscriptions to components with automatic cleanup
-- [ ] T139 [US5] Integrate SignalR event handlers into tasks store: listen for TaskStatusChanged, TaskCreated, CommentAdded events and update local state
-- [ ] T140 [P] [US5] Update kanban board component to listen to real-time events and optimistically update UI before server confirmation
-- [ ] T141 [US5] Create offline sync service in `frontend/src/services/api/offlineSync.ts` queuing mutations when offline, syncing when connection restored
-- [ ] T142 [US5] Add connection status indicator component in `frontend/src/components/ui/ConnectionStatus.tsx` showing online/offline/connecting state with visual feedback
+- [X] T137 [US5] Create SignalR service in `frontend/src/services/signalr/signalrService.ts` managing hub connection, authentication, reconnection logic, event subscriptions
+- [X] T138 [P] [US5] Create useRealtime hook in `frontend/src/hooks/useRealtime.ts` providing real-time event subscriptions to components with automatic cleanup
+- [X] T139 [US5] Integrate SignalR event handlers into tasks store: listen for TaskStatusChanged, TaskCreated, CommentAdded events and update local state
+- [X] T140 [P] [US5] Update kanban board component to listen to real-time events and optimistically update UI before server confirmation
+- [X] T141 [US5] Create offline sync service in `frontend/src/services/api/offlineSync.ts` queuing mutations when offline, syncing when connection restored
+- [X] T142 [US5] Add connection status indicator component in `frontend/src/components/ui/ConnectionStatus.tsx` showing online/offline/connecting state with visual feedback
 
 ---
 
