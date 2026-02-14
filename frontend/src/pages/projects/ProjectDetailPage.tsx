@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useProjectsStore } from '@/store/projectsStore';
+import { useTasksStore } from '@/store/tasksStore';
 import { Button } from '@/components/ui/button';
 import TeamMemberList from '@/components/projects/TeamMemberList';
 import { ProjectForm } from '@/components/projects/ProjectForm';
@@ -11,14 +12,23 @@ export const ProjectDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const { currentProject, fetchProject, updateProject, isLoading, error, clearError } =
     useProjectsStore();
+  const {
+    tasks,
+    fetchProjectTasks,
+    isLoading: tasksLoading,
+    error: tasksError,
+    clearError: clearTasksError,
+  } = useTasksStore();
   const [showInviteDialog, setShowInviteDialog] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     if (projectId) {
-      fetchProject(parseInt(projectId, 10));
+      const parsedProjectId = parseInt(projectId, 10);
+      fetchProject(parsedProjectId);
+      fetchProjectTasks(parsedProjectId);
     }
-  }, [projectId, fetchProject]);
+  }, [projectId, fetchProject, fetchProjectTasks]);
 
   if (isLoading || !currentProject) {
     return (
@@ -42,6 +52,10 @@ export const ProjectDetailPage: React.FC = () => {
   const handleCloseSettings = () => {
     clearError();
     setShowSettings(false);
+  };
+
+  const handleDismissTasksError = () => {
+    clearTasksError();
   };
 
   const handleSubmitSettings = async (data: UpdateProjectRequest) => {
@@ -203,6 +217,92 @@ export const ProjectDetailPage: React.FC = () => {
             projectId={currentProject.id}
             canManage={canManageProject}
           />
+        </div>
+
+        {/* Project Tasks */}
+        <div className="bg-white shadow rounded-lg p-6 mt-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-900">Project Tasks</h2>
+            <Button
+              onClick={() => navigate(`/projects/${currentProject.id}/board`)}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              View Board
+            </Button>
+          </div>
+
+          {tasksError && (
+            <div className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-700">
+              <div className="flex items-center justify-between">
+                <span>{tasksError}</span>
+                <Button
+                  type="button"
+                  onClick={handleDismissTasksError}
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-700"
+                >
+                  Dismiss
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {tasksLoading ? (
+            <div className="flex items-center justify-center py-10">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mx-auto"></div>
+                <p className="mt-3 text-gray-600">Loading tasks...</p>
+              </div>
+            </div>
+          ) : tasks.length === 0 ? (
+            <div className="text-center py-10">
+              <h3 className="text-sm font-medium text-gray-900">No tasks yet</h3>
+              <p className="mt-1 text-sm text-gray-500">
+                Create a task on the board to get started.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {tasks.map((task) => (
+                <div
+                  key={task.id}
+                  className="rounded-lg border border-gray-200 p-4 hover:shadow-sm transition-shadow"
+                >
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">{task.title}</h3>
+                      {task.description && (
+                        <p className="mt-1 text-sm text-gray-600 line-clamp-2">
+                          {task.description}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex flex-col items-end space-y-2">
+                      <span className="rounded-full bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700">
+                        {task.status}
+                      </span>
+                      <span className="rounded-full bg-gray-100 px-2 py-1 text-xs font-semibold text-gray-700">
+                        {task.priority}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                    <span>
+                      Assignee:{' '}
+                      {task.assignee
+                        ? `${task.assignee.firstName ?? ''} ${task.assignee.lastName ?? ''}`.trim() ||
+                          task.assignee.email
+                        : 'Unassigned'}
+                    </span>
+                    <span>Comments: {task.commentCount}</span>
+                    {task.dueDate && (
+                      <span>Due {new Date(task.dueDate).toLocaleDateString()}</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Invite Dialog - Placeholder */}
