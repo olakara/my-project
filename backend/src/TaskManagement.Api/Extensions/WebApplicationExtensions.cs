@@ -14,7 +14,9 @@ using TaskManagement.Api.Features.Tasks.CreateTask;
 using TaskManagement.Api.Features.Tasks.GetTask;
 using TaskManagement.Api.Features.Tasks.GetMyTasks;
 using TaskManagement.Api.Features.Tasks.UpdateTask;
+using TaskManagement.Api.Features.Tasks.UpdateTaskStatus;
 using TaskManagement.Api.Features.Tasks.AssignTask;
+using TaskManagement.Api.Features.Tasks.AddComment;
 using TaskManagement.Api.Hubs;
 
 namespace TaskManagement.Api.Extensions;
@@ -74,7 +76,9 @@ public static class WebApplicationExtensions
         app.MapGetTaskEndpoint();
         app.MapGetMyTasksEndpoint();
         app.MapUpdateTaskEndpoint();
+        app.MapUpdateTaskStatusEndpoint();
         app.MapAssignTaskEndpoint();
+        app.MapAddCommentEndpoint();
 
         // SignalR hub
         app.MapHub<TaskManagementHub>("/hubs/taskmanagement");
