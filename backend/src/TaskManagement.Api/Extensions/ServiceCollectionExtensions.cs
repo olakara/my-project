@@ -123,20 +123,6 @@ public static class ServiceCollectionExtensions
         // Authorization
         services.AddAuthorization();
 
-        // CORS
-        services.AddCors(options =>
-        {
-            options.AddPolicy("AllowFrontend", builder =>
-            {
-                var corsOrigins = configuration.GetSection("Cors:Origins").Get<string[]>() ?? new[] { "http://localhost:5173" };
-                builder
-                    .WithOrigins(corsOrigins)
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials();
-            });
-        });
-
         // SignalR
         var signalRBuilder = services.AddSignalR(options =>
         {

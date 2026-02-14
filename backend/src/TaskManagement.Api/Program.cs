@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using TaskManagement.Api.Configuration;
 using TaskManagement.Api.Data;
 using TaskManagement.Api.Extensions;
+using TaskManagement.Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,21 @@ builder.Services.AddApplicationValidation();
 // Application services
 builder.Services.AddApplicationServices(builder.Configuration, builder.Environment);
 
+// CORS
+var corsOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+    ?? new[] { "http://localhost:5173", "https://localhost:5173" };
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy
+            .WithOrigins(corsOrigins)
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
+    });
+});
+
 // Build
 var app = builder.Build();
 
@@ -50,7 +66,30 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Configure the HTTP request pipeline
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseApplicationMiddleware();
+
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
+app.UseCors("AllowFrontend");
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Task Management API v1");
+        c.RoutePrefix = string.Empty;
+    });
+}
 
 // Map endpoints
 app.MapApplicationEndpoints();

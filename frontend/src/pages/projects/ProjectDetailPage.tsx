@@ -3,12 +3,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useProjectsStore } from '@/store/projectsStore';
 import { Button } from '@/components/ui/button';
 import TeamMemberList from '@/components/projects/TeamMemberList';
-import { ProjectRole } from '@/types/project.types';
+import { ProjectForm } from '@/components/projects/ProjectForm';
+import { ProjectRole, UpdateProjectRequest } from '@/types/project.types';
 
 export const ProjectDetailPage: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
-  const { currentProject, fetchProject, isLoading, error } = useProjectsStore();
+  const { currentProject, fetchProject, updateProject, isLoading, error, clearError } =
+    useProjectsStore();
   const [showInviteDialog, setShowInviteDialog] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
@@ -31,6 +33,25 @@ export const ProjectDetailPage: React.FC = () => {
 
   const canManageProject =
     currentProject.role === ProjectRole.Owner || currentProject.role === ProjectRole.Manager;
+
+  const handleOpenSettings = () => {
+    clearError();
+    setShowSettings(true);
+  };
+
+  const handleCloseSettings = () => {
+    clearError();
+    setShowSettings(false);
+  };
+
+  const handleSubmitSettings = async (data: UpdateProjectRequest) => {
+    if (!currentProject) {
+      return;
+    }
+
+    await updateProject(currentProject.id, data);
+    setShowSettings(false);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -139,7 +160,7 @@ export const ProjectDetailPage: React.FC = () => {
                     + Invite Member
                   </Button>
                   <Button
-                    onClick={() => setShowSettings(true)}
+                    onClick={handleOpenSettings}
                     className="bg-gray-200 hover:bg-gray-300 text-gray-700"
                   >
                     Settings
@@ -197,15 +218,51 @@ export const ProjectDetailPage: React.FC = () => {
           </div>
         )}
 
-        {/* Settings Dialog - Placeholder */}
+        {/* Settings Dialog */}
         {showSettings && (
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full">
-              <h2 className="text-xl font-bold mb-4">Project Settings</h2>
-              <p className="text-gray-600 mb-4">
-                Settings dialog will be implemented with ProjectForm component
-              </p>
-              <Button onClick={() => setShowSettings(false)}>Close</Button>
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 px-4">
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="project-settings-title"
+              className="w-full max-w-lg rounded-lg bg-white p-6 shadow-lg"
+            >
+              <div className="flex items-start justify-between">
+                <div>
+                  <h2 id="project-settings-title" className="text-xl font-bold text-gray-900">
+                    Project Settings
+                  </h2>
+                  <p className="mt-1 text-sm text-gray-600">
+                    Update the project name or description.
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  onClick={handleCloseSettings}
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-700"
+                >
+                  Close
+                </Button>
+              </div>
+
+              {error && (
+                <div className="mt-4 rounded-md bg-red-50 p-3 text-sm text-red-700">
+                  {error}
+                </div>
+              )}
+
+              <div className="mt-6">
+                <ProjectForm
+                  initialData={{
+                    name: currentProject.name,
+                    description: currentProject.description,
+                  }}
+                  onSubmit={handleSubmitSettings}
+                  onCancel={handleCloseSettings}
+                  isLoading={isLoading}
+                  mode="edit"
+                />
+              </div>
             </div>
           </div>
         )}
