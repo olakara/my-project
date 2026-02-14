@@ -18,6 +18,8 @@ using TaskManagement.Api.Features.Tasks.UpdateTaskStatus;
 using TaskManagement.Api.Features.Tasks.AssignTask;
 using TaskManagement.Api.Features.Tasks.AddComment;
 using TaskManagement.Api.Features.Dashboard.GetProjectMetrics;
+using TaskManagement.Api.Features.Dashboard.GetBurndown;
+using TaskManagement.Api.Features.Dashboard.GetTeamActivity;
 using TaskManagement.Api.Hubs;
 
 namespace TaskManagement.Api.Extensions;
@@ -81,6 +83,8 @@ public static class WebApplicationExtensions
         app.MapAssignTaskEndpoint();
         app.MapAddCommentEndpoint();
         app.MapGetProjectMetricsEndpoint();
+        app.MapGetBurndownEndpoint();
+        app.MapGetTeamActivityEndpoint();
 
         // SignalR hub
         app.MapHub<TaskManagementHub>("/hubs/taskmanagement");

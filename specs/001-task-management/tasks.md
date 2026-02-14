@@ -365,13 +365,13 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Get Burndown Chart Feature
 
-- [ ] T145 [US7] Create burndown service in `backend/src/TaskManagement.Api/Features/Dashboard/GetBurndown/GetBurndownService.cs` calculating tasks completed per day from task history records, aggregating by date
-- [ ] T146 [P] [US7] Create burndown endpoint in `backend/src/TaskManagement.Api/Features/Dashboard/GetBurndown/GetBurndownEndpoint.cs` as GET `/api/v1/projects/{projectId}/burndown` with date range query params returning 200
+- [X] T145 [US7] Create burndown service in `backend/src/TaskManagement.Api/Features/Dashboard/GetBurndown/GetBurndownService.cs` calculating tasks completed per day from task history records, aggregating by date
+- [X] T146 [P] [US7] Create burndown endpoint in `backend/src/TaskManagement.Api/Features/Dashboard/GetBurndown/GetBurndownEndpoint.cs` as GET `/api/v1/projects/{projectId}/burndown` with date range query params returning 200
 
 ### Get Team Activity Feature
 
-- [ ] T147 [US7] Create team activity service in `backend/src/TaskManagement.Api/Features/Dashboard/GetTeamActivity/GetTeamActivityService.cs` aggregating task statistics by team member, sorting by completion count
-- [ ] T148 [P] [US7] Create team activity endpoint in `backend/src/TaskManagement.Api/Features/Dashboard/GetTeamActivity/GetTeamActivityEndpoint.cs` as GET `/api/v1/projects/{projectId}/team-activity` requiring [Authorize] returning 200
+- [X] T147 [US7] Create team activity service in `backend/src/TaskManagement.Api/Features/Dashboard/GetTeamActivity/GetTeamActivityService.cs` aggregating task statistics by team member, sorting by completion count
+- [X] T148 [P] [US7] Create team activity endpoint in `backend/src/TaskManagement.Api/Features/Dashboard/GetTeamActivity/GetTeamActivityEndpoint.cs` as GET `/api/v1/projects/{projectId}/team-activity` requiring [Authorize] returning 200
 
 ### Export Report Feature
 
