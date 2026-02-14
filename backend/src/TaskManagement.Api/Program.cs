@@ -10,7 +10,10 @@ builder.AddApplicationLogging();
 
 // Add services to the container
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.CustomSchemaIds(type => type.FullName?.Replace("+", ".") ?? type.Name);
+});
 
 // Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
