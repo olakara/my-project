@@ -64,4 +64,10 @@ public class ProjectRepository : IProjectRepository
             await _context.SaveChangesAsync(ct);
         }
     }
+
+    public async Task<bool> IsUserMemberOfProjectAsync(int projectId, string userId, CancellationToken ct = default)
+    {
+        return await _context.ProjectMembers
+            .AnyAsync(pm => pm.ProjectId == projectId && pm.UserId == userId, ct);
+    }
 }

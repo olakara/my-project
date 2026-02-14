@@ -25,7 +25,7 @@ builder.Services.ConfigureIdentityOptions();
 builder.Services.AddApplicationValidation();
 
 // Application services
-builder.Services.AddApplicationServices(builder.Configuration);
+builder.Services.AddApplicationServices(builder.Configuration, builder.Environment);
 
 // Build
 var app = builder.Build();
