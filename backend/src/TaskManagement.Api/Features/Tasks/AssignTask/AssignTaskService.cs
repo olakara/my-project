@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using TaskManagement.Api.Data;
 using TaskManagement.Api.Data.Repositories;
@@ -5,6 +6,7 @@ using TaskManagement.Api.Domain.Notifications;
 using TaskManagement.Api.Domain.Projects;
 using TaskManagement.Api.Domain.Tasks;
 using TaskManagement.Api.Domain.Users;
+using TaskManagement.Api.Hubs;
 using DomainTask = TaskManagement.Api.Domain.Tasks.Task;
 
 namespace TaskManagement.Api.Features.Tasks.AssignTask;
@@ -23,17 +25,20 @@ public class AssignTaskService : IAssignTaskService
     private readonly TaskManagementDbContext _context;
     private readonly ITaskRepository _taskRepository;
     private readonly IProjectRepository _projectRepository;
+    private readonly IHubContext<TaskManagementHub> _hubContext;
     private readonly ILogger<AssignTaskService> _logger;
 
     public AssignTaskService(
         TaskManagementDbContext context,
         ITaskRepository taskRepository,
         IProjectRepository projectRepository,
+        IHubContext<TaskManagementHub> hubContext,
         ILogger<AssignTaskService> logger)
     {
         _context = context;
         _taskRepository = taskRepository;
         _projectRepository = projectRepository;
+        _hubContext = hubContext;
         _logger = logger;
     }
 
@@ -139,8 +144,19 @@ public class AssignTaskService : IAssignTaskService
             _logger.LogInformation("Notification created for user {UserId} about task assignment", newAssigneeId);
         }
 
-        // TODO: Broadcast update via SignalR hub
-        // await _signalRHub.BroadcastTaskAssigned(project.Id, task);
+        // Broadcast assignment to all project members via SignalR
+        await _hubContext.Clients.Group($"project-{project.Id}").SendAsync("TaskAssigned", new
+        {
+            id = task.Id,
+            projectId = task.ProjectId,
+            title = task.Title,
+            previousAssigneeId,
+            newAssigneeId,
+            assignedBy = userId,
+            updatedTimestamp = task.UpdatedTimestamp
+        }, ct);
+
+        _logger.LogDebug("Task {TaskId} assignment broadcasted to project {ProjectId} members", taskId, project.Id);
 
         return BuildResponse(task);
     }

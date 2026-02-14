@@ -325,16 +325,16 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Backend Real-Time Publishing
 
-- [ ] T130 [US5] Integrate SignalR hub injection into task services: CreateTaskService broadcasts TaskCreated event
-- [ ] T131 [P] [US5] Update UpdateTaskStatusService to broadcast TaskStatusChanged event to project group
-- [ ] T132 [US5] Update AssignTaskService to broadcast TaskAssigned event
-- [ ] T133 [P] [US5] Create comment service in `backend/src/TaskManagement.Api/Features/Tasks/AddComment/AddCommentService.cs` with SignalR broadcast of CommentAdded event
+- [X] T130 [US5] Integrate SignalR hub injection into task services: CreateTaskService broadcasts TaskCreated event
+- [X] T131 [P] [US5] Update UpdateTaskStatusService to broadcast TaskStatusChanged event to project group
+- [X] T132 [US5] Update AssignTaskService to broadcast TaskAssigned event
+- [X] T133 [P] [US5] Create comment service in `backend/src/TaskManagement.Api/Features/Tasks/AddComment/AddCommentService.cs` with SignalR broadcast of CommentAdded event
 
 ### Add Comment Feature
 
-- [ ] T134 [US5] Create comment DTOs in `backend/src/TaskManagement.Api/Features/Tasks/AddComment/AddCommentRequest.cs` and `AddCommentResponse.cs` with content
-- [ ] T135 [US5] Create comment validator in `backend/src/TaskManagement.Api/Features/Tasks/AddComment/CommentValidator.cs` validating content length (1-5000 chars)
-- [ ] T136 [P] [US5] Create add comment endpoint in `backend/src/TaskManagement.Api/Features/Tasks/AddComment/AddCommentEndpoint.cs` as POST `/api/v1/tasks/{taskId}/comments` requiring [Authorize] returning 201
+- [X] T134 [US5] Create comment DTOs in `backend/src/TaskManagement.Api/Features/Tasks/AddComment/AddCommentRequest.cs` and `AddCommentResponse.cs` with content
+- [X] T135 [US5] Create comment validator in `backend/src/TaskManagement.Api/Features/Tasks/AddComment/CommentValidator.cs` validating content length (1-5000 chars)
+- [X] T136 [P] [US5] Create add comment endpoint in `backend/src/TaskManagement.Api/Features/Tasks/AddComment/AddCommentEndpoint.cs` as POST `/api/v1/tasks/{taskId}/comments` requiring [Authorize] returning 201
 
 ### Frontend SignalR Integration
 

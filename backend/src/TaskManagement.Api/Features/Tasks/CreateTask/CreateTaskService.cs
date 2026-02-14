@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.SignalR;
 using TaskManagement.Api.Data;
 using TaskManagement.Api.Data.Repositories;
 using TaskManagement.Api.Domain.Tasks;
 using TaskManagement.Api.Domain.Projects;
+using TaskManagement.Api.Hubs;
 using DomainTask = TaskManagement.Api.Domain.Tasks.Task;
 using DomainTaskStatus = TaskManagement.Api.Domain.Tasks.TaskStatus;
 
@@ -17,17 +19,20 @@ public class CreateTaskService : ICreateTaskService
     private readonly TaskManagementDbContext _context;
     private readonly IProjectRepository _projectRepository;
     private readonly ITaskRepository _taskRepository;
+    private readonly IHubContext<TaskManagementHub> _hubContext;
     private readonly ILogger<CreateTaskService> _logger;
 
     public CreateTaskService(
         TaskManagementDbContext context,
         IProjectRepository projectRepository,
         ITaskRepository taskRepository,
+        IHubContext<TaskManagementHub> hubContext,
         ILogger<CreateTaskService> logger)
     {
         _context = context;
         _projectRepository = projectRepository;
         _taskRepository = taskRepository;
+        _hubContext = hubContext;
         _logger = logger;
     }
 
@@ -81,7 +86,24 @@ public class CreateTaskService : ICreateTaskService
         await _context.SaveChangesAsync(ct);
 
         _logger.LogInformation("Task {TaskId} created in project {ProjectId} by user {UserId}", createdTask.Id, projectId, userId);
-        _logger.LogDebug("Task {TaskId} create event queued for realtime broadcast", createdTask.Id);
+
+        // Broadcast task creation to all project members via SignalR
+        await _hubContext.Clients.Group($"project-{projectId}").SendAsync("TaskCreated", new
+        {
+            id = createdTask.Id,
+            projectId = createdTask.ProjectId,
+            title = createdTask.Title,
+            description = createdTask.Description,
+            status = createdTask.Status.ToString(),
+            priority = createdTask.Priority.ToString(),
+            assigneeId = createdTask.AssigneeId,
+            createdBy = createdTask.CreatedBy,
+            dueDate = createdTask.DueDate,
+            createdTimestamp = createdTask.CreatedTimestamp,
+            updatedTimestamp = createdTask.UpdatedTimestamp
+        }, ct);
+
+        _logger.LogDebug("Task {TaskId} create event broadcasted to project {ProjectId} members", createdTask.Id, projectId);
 
         return new CreateTaskResponse
         {

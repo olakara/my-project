@@ -19,7 +19,9 @@ using TaskManagement.Api.Features.Tasks.CreateTask;
 using TaskManagement.Api.Features.Tasks.GetTask;
 using TaskManagement.Api.Features.Tasks.GetMyTasks;
 using TaskManagement.Api.Features.Tasks.UpdateTask;
+using TaskManagement.Api.Features.Tasks.UpdateTaskStatus;
 using TaskManagement.Api.Features.Tasks.AssignTask;
+using TaskManagement.Api.Features.Tasks.AddComment;
 
 namespace TaskManagement.Api.Extensions;
 
@@ -59,7 +61,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IGetTaskService, GetTaskService>();
         services.AddScoped<IGetMyTasksService, GetMyTasksService>();
         services.AddScoped<IUpdateTaskService, UpdateTaskService>();
+        services.AddScoped<IUpdateTaskStatusService, UpdateTaskStatusService>();
         services.AddScoped<IAssignTaskService, AssignTaskService>();
+        services.AddScoped<IAddCommentService, AddCommentService>();
 
         // Authentication
         var jwtSettings = configuration.GetSection("Jwt");
