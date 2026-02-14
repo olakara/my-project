@@ -319,9 +319,9 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### SignalR Hub Setup
 
-- [ ] T127 [P] [US5] Create TaskManagementHub in `backend/src/TaskManagement.Api/Hubs/TaskManagementHub.cs` with methods: JoinProject(projectId), LeaveProject(projectId), SendTaskUpdate(), SendCommentAdded(), SendUserConnected(), SendUserDisconnected()
-- [ ] T128 [US5] Configure SignalR in `backend/src/TaskManagement.Api/Program.cs` with JWT authentication, CORS settings, hub routing, optional Redis backplane for scaling
-- [ ] T129 [P] [US5] Create SignalR event mappings in hub to broadcast updates to project group: TaskStatusChanged → broadcast to group, CommentAdded → broadcast to group, TaskCreated → broadcast to group
+- [X] T127 [P] [US5] Create TaskManagementHub in `backend/src/TaskManagement.Api/Hubs/TaskManagementHub.cs` with methods: JoinProject(projectId), LeaveProject(projectId), SendTaskUpdate(), SendCommentAdded(), SendUserConnected(), SendUserDisconnected()
+- [X] T128 [US5] Configure SignalR in `backend/src/TaskManagement.Api/Program.cs` with JWT authentication, CORS settings, hub routing, optional Redis backplane for scaling
+- [X] T129 [P] [US5] Create SignalR event mappings in hub to broadcast updates to project group: TaskStatusChanged → broadcast to group, CommentAdded → broadcast to group, TaskCreated → broadcast to group
 
 ### Backend Real-Time Publishing
 
