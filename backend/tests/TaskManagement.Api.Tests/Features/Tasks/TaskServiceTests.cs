@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -10,6 +11,7 @@ using TaskManagement.Api.Domain.Users;
 using TaskManagement.Api.Features.Tasks.CreateTask;
 using TaskManagement.Api.Features.Tasks.GetTask;
 using TaskManagement.Api.Features.Tasks.UpdateTaskStatus;
+using TaskManagement.Api.Hubs;
 using Xunit;
 using DomainTask = TaskManagement.Api.Domain.Tasks.Task;
 using DomainTaskStatus = TaskManagement.Api.Domain.Tasks.TaskStatus;
@@ -27,6 +29,7 @@ public class TaskServiceTests
     private readonly Mock<IProjectRepository> _projectRepositoryMock;
     private readonly Mock<ILogger<CreateTaskService>> _createTaskLoggerMock;
     private readonly Mock<ILogger<UpdateTaskStatusService>> _updateStatusLoggerMock;
+    private readonly Mock<IHubContext<TaskManagementHub>> _hubContextMock;
 
     public TaskServiceTests()
     {
@@ -38,6 +41,7 @@ public class TaskServiceTests
         _projectRepositoryMock = new Mock<IProjectRepository>();
         _createTaskLoggerMock = new Mock<ILogger<CreateTaskService>>();
         _updateStatusLoggerMock = new Mock<ILogger<UpdateTaskStatusService>>();
+        _hubContextMock = new Mock<IHubContext<TaskManagementHub>>();
     }
 
     #region CreateTaskService Tests
@@ -73,6 +77,7 @@ public class TaskServiceTests
             _context,
             _projectRepositoryMock.Object,
             _taskRepositoryMock.Object,
+            _hubContextMock.Object,
             _createTaskLoggerMock.Object);
 
         // Act
@@ -101,6 +106,7 @@ public class TaskServiceTests
             _context,
             _projectRepositoryMock.Object,
             _taskRepositoryMock.Object,
+            _hubContextMock.Object,
             _createTaskLoggerMock.Object);
 
         // Act & Assert
@@ -220,6 +226,7 @@ public class TaskServiceTests
             _context,
             _taskRepositoryMock.Object,
             _projectRepositoryMock.Object,
+            _hubContextMock.Object,
             _updateStatusLoggerMock.Object);
 
         // Act
@@ -274,6 +281,7 @@ public class TaskServiceTests
             _context,
             _taskRepositoryMock.Object,
             _projectRepositoryMock.Object,
+            _hubContextMock.Object,
             _updateStatusLoggerMock.Object);
 
         // Act
@@ -313,6 +321,7 @@ public class TaskServiceTests
             _context,
             _taskRepositoryMock.Object,
             _projectRepositoryMock.Object,
+            _hubContextMock.Object,
             _updateStatusLoggerMock.Object);
 
         // Act & Assert

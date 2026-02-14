@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -9,8 +10,10 @@ using TaskManagement.Api.Domain.Projects;
 using TaskManagement.Api.Domain.Tasks;
 using TaskManagement.Api.Domain.Users;
 using TaskManagement.Api.Features.Tasks.AssignTask;
+using TaskManagement.Api.Hubs;
 using Xunit;
 using DomainTask = TaskManagement.Api.Domain.Tasks.Task;
+using DomainTaskStatus = TaskManagement.Api.Domain.Tasks.TaskStatus;
 
 namespace TaskManagement.Api.Tests.Features.Tasks;
 
@@ -23,6 +26,7 @@ public class AssignmentServiceTests
     private readonly TaskRepository _taskRepository;
     private readonly ProjectRepository _projectRepository;
     private readonly Mock<ILogger<AssignTaskService>> _loggerMock;
+    private readonly Mock<IHubContext<TaskManagementHub>> _hubContextMock;
 
     public AssignmentServiceTests()
     {
@@ -34,6 +38,7 @@ public class AssignmentServiceTests
         _taskRepository = new TaskRepository(_context);
         _projectRepository = new ProjectRepository(_context);
         _loggerMock = new Mock<ILogger<AssignTaskService>>();
+        _hubContextMock = new Mock<IHubContext<TaskManagementHub>>();
     }
 
     [Fact]
@@ -47,6 +52,7 @@ public class AssignmentServiceTests
             _context,
             _taskRepository,
             _projectRepository,
+            _hubContextMock.Object,
             _loggerMock.Object);
 
         var request = new AssignTaskRequest { AssigneeId = assignee.Id };
@@ -91,6 +97,7 @@ public class AssignmentServiceTests
             _context,
             _taskRepository,
             _projectRepository,
+            _hubContextMock.Object,
             _loggerMock.Object);
 
         var request = new AssignTaskRequest { AssigneeId = assignee.Id };
@@ -117,6 +124,7 @@ public class AssignmentServiceTests
             _context,
             _taskRepository,
             _projectRepository,
+            _hubContextMock.Object,
             _loggerMock.Object);
 
         var request = new AssignTaskRequest { AssigneeId = outsiderAssignee.Id };
@@ -191,7 +199,7 @@ public class AssignmentServiceTests
             Title = "Assignment Task",
             CreatedBy = owner.Id,
             Creator = owner,
-            Status = TaskStatus.ToDo,
+            Status = DomainTaskStatus.ToDo,
             Priority = TaskPriority.Medium,
             CreatedTimestamp = DateTime.UtcNow,
             UpdatedTimestamp = DateTime.UtcNow
