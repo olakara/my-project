@@ -99,18 +99,21 @@ public class UpdateTaskStatusService : IUpdateTaskStatusService
             taskId, oldStatus, request.NewStatus, userId);
 
         // Broadcast status change to all project members via SignalR
-        await _hubContext.Clients.Group($"project-{project.Id}").SendAsync("TaskStatusChanged", new
+        if (_hubContext.Clients != null)
         {
-            id = task.Id,
-            projectId = task.ProjectId,
-            title = task.Title,
-            oldStatus = oldStatus.ToString(),
-            newStatus = request.NewStatus.ToString(),
-            changedBy = userId,
-            updatedTimestamp = task.UpdatedTimestamp
-        }, ct);
+            await _hubContext.Clients.Group($"project-{project.Id}").SendAsync("TaskStatusChanged", new
+            {
+                id = task.Id,
+                projectId = task.ProjectId,
+                title = task.Title,
+                oldStatus = oldStatus.ToString(),
+                newStatus = request.NewStatus.ToString(),
+                changedBy = userId,
+                updatedTimestamp = task.UpdatedTimestamp
+            }, ct);
 
-        _logger.LogDebug("Task {TaskId} status change broadcasted to project {ProjectId} members", taskId, project.Id);
+            _logger.LogDebug("Task {TaskId} status change broadcasted to project {ProjectId} members", taskId, project.Id);
+        }
 
         return BuildResponse(task);
     }

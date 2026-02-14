@@ -145,18 +145,21 @@ public class AssignTaskService : IAssignTaskService
         }
 
         // Broadcast assignment to all project members via SignalR
-        await _hubContext.Clients.Group($"project-{project.Id}").SendAsync("TaskAssigned", new
+        if (_hubContext.Clients != null)
         {
-            id = task.Id,
-            projectId = task.ProjectId,
-            title = task.Title,
-            previousAssigneeId,
-            newAssigneeId,
-            assignedBy = userId,
-            updatedTimestamp = task.UpdatedTimestamp
-        }, ct);
+            await _hubContext.Clients.Group($"project-{project.Id}").SendAsync("TaskAssigned", new
+            {
+                id = task.Id,
+                projectId = task.ProjectId,
+                title = task.Title,
+                previousAssigneeId,
+                newAssigneeId,
+                assignedBy = userId,
+                updatedTimestamp = task.UpdatedTimestamp
+            }, ct);
 
-        _logger.LogDebug("Task {TaskId} assignment broadcasted to project {ProjectId} members", taskId, project.Id);
+            _logger.LogDebug("Task {TaskId} assignment broadcasted to project {ProjectId} members", taskId, project.Id);
+        }
 
         return BuildResponse(task);
     }

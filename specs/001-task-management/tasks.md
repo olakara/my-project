@@ -360,8 +360,8 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Get Project Metrics Feature
 
-- [ ] T143 [P] [US7] Create metrics service in `backend/src/TaskManagement.Api/Features/Dashboard/GetProjectMetrics/GetProjectMetricsService.cs` calculating task counts by status, completion percentage, team member statistics
-- [ ] T144 [US7] Create metrics endpoint in `backend/src/TaskManagement.Api/Features/Dashboard/GetProjectMetrics/GetProjectMetricsEndpoint.cs` as GET `/api/v1/projects/{projectId}/metrics` requiring [Authorize] returning 200
+- [X] T143 [P] [US7] Create metrics service in `backend/src/TaskManagement.Api/Features/Dashboard/GetProjectMetrics/GetProjectMetricsService.cs` calculating task counts by status, completion percentage, team member statistics
+- [X] T144 [US7] Create metrics endpoint in `backend/src/TaskManagement.Api/Features/Dashboard/GetProjectMetrics/GetProjectMetricsEndpoint.cs` as GET `/api/v1/projects/{projectId}/metrics` requiring [Authorize] returning 200
 
 ### Get Burndown Chart Feature
 

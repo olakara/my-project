@@ -88,22 +88,25 @@ public class CreateTaskService : ICreateTaskService
         _logger.LogInformation("Task {TaskId} created in project {ProjectId} by user {UserId}", createdTask.Id, projectId, userId);
 
         // Broadcast task creation to all project members via SignalR
-        await _hubContext.Clients.Group($"project-{projectId}").SendAsync("TaskCreated", new
+        if (_hubContext.Clients != null)
         {
-            id = createdTask.Id,
-            projectId = createdTask.ProjectId,
-            title = createdTask.Title,
-            description = createdTask.Description,
-            status = createdTask.Status.ToString(),
-            priority = createdTask.Priority.ToString(),
-            assigneeId = createdTask.AssigneeId,
-            createdBy = createdTask.CreatedBy,
-            dueDate = createdTask.DueDate,
-            createdTimestamp = createdTask.CreatedTimestamp,
-            updatedTimestamp = createdTask.UpdatedTimestamp
-        }, ct);
+            await _hubContext.Clients.Group($"project-{projectId}").SendAsync("TaskCreated", new
+            {
+                id = createdTask.Id,
+                projectId = createdTask.ProjectId,
+                title = createdTask.Title,
+                description = createdTask.Description,
+                status = createdTask.Status.ToString(),
+                priority = createdTask.Priority.ToString(),
+                assigneeId = createdTask.AssigneeId,
+                createdBy = createdTask.CreatedBy,
+                dueDate = createdTask.DueDate,
+                createdTimestamp = createdTask.CreatedTimestamp,
+                updatedTimestamp = createdTask.UpdatedTimestamp
+            }, ct);
 
-        _logger.LogDebug("Task {TaskId} create event broadcasted to project {ProjectId} members", createdTask.Id, projectId);
+            _logger.LogDebug("Task {TaskId} create event broadcasted to project {ProjectId} members", createdTask.Id, projectId);
+        }
 
         return new CreateTaskResponse
         {

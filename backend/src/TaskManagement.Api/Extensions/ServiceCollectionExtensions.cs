@@ -22,6 +22,7 @@ using TaskManagement.Api.Features.Tasks.UpdateTask;
 using TaskManagement.Api.Features.Tasks.UpdateTaskStatus;
 using TaskManagement.Api.Features.Tasks.AssignTask;
 using TaskManagement.Api.Features.Tasks.AddComment;
+using TaskManagement.Api.Features.Dashboard.GetProjectMetrics;
 
 namespace TaskManagement.Api.Extensions;
 
@@ -64,6 +65,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUpdateTaskStatusService, UpdateTaskStatusService>();
         services.AddScoped<IAssignTaskService, AssignTaskService>();
         services.AddScoped<IAddCommentService, AddCommentService>();
+        services.AddScoped<IGetProjectMetricsService, GetProjectMetricsService>();
 
         // Authentication
         var jwtSettings = configuration.GetSection("Jwt");
