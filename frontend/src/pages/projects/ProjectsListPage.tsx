@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProjectsStore } from '@/store/projectsStore';
 import { Button } from '@/components/ui/button';
-import type { ProjectSummary } from '@/types/project.types';
+import { ProjectForm } from '@/components/projects/ProjectForm';
+import type { CreateProjectRequest, ProjectSummary } from '@/types/project.types';
 
 export const ProjectsListPage: React.FC = () => {
   const navigate = useNavigate();
-  const { projects, fetchProjects, isLoading, error } = useProjectsStore();
+  const { projects, fetchProjects, createProject, isLoading, error, clearError } = useProjectsStore();
   const [showCreateDialog, setShowCreateDialog] = useState(false);
 
   useEffect(() => {
@@ -18,7 +19,24 @@ export const ProjectsListPage: React.FC = () => {
   };
 
   const handleCreateProject = () => {
+    clearError();
     setShowCreateDialog(true);
+  };
+
+  const handleCloseCreateDialog = () => {
+    clearError();
+    setShowCreateDialog(false);
+  };
+
+  const handleSubmitCreateProject = async (data: CreateProjectRequest) => {
+    const createdProject = await createProject(data);
+    if (createdProject?.id) {
+      setShowCreateDialog(false);
+      navigate(`/projects/${createdProject.id}`);
+      return;
+    }
+
+    setShowCreateDialog(false);
   };
 
   if (isLoading && projects.length === 0) {
@@ -163,15 +181,47 @@ export const ProjectsListPage: React.FC = () => {
         )}
       </div>
 
-      {/* Create Project Dialog - Placeholder for now */}
+      {/* Create Project Dialog */}
       {showCreateDialog && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h2 className="text-xl font-bold mb-4">Create New Project</h2>
-            <p className="text-gray-600 mb-4">
-              Project creation dialog will be implemented with ProjectForm component
-            </p>
-            <Button onClick={() => setShowCreateDialog(false)}>Close</Button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 px-4">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="create-project-title"
+            className="w-full max-w-lg rounded-lg bg-white p-6 shadow-lg"
+          >
+            <div className="flex items-start justify-between">
+              <div>
+                <h2 id="create-project-title" className="text-xl font-bold text-gray-900">
+                  Create New Project
+                </h2>
+                <p className="mt-1 text-sm text-gray-600">
+                  Add a name and optional description to get started.
+                </p>
+              </div>
+              <Button
+                type="button"
+                onClick={handleCloseCreateDialog}
+                className="bg-gray-200 hover:bg-gray-300 text-gray-700"
+              >
+                Close
+              </Button>
+            </div>
+
+            {error && (
+              <div className="mt-4 rounded-md bg-red-50 p-3 text-sm text-red-700">
+                {error}
+              </div>
+            )}
+
+            <div className="mt-6">
+              <ProjectForm
+                onSubmit={handleSubmitCreateProject}
+                onCancel={handleCloseCreateDialog}
+                isLoading={isLoading}
+                mode="create"
+              />
+            </div>
           </div>
         </div>
       )}
