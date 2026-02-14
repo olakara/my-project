@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -55,5 +57,40 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: 'Fraunces', 'Times New Roman', serif;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes rise-in {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.6s ease-out both;
+  }
+
+  .animate-rise-in {
+    animation: rise-in 0.7s ease-out both;
   }
 }

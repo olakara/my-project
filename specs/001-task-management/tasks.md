@@ -385,10 +385,10 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Frontend Dashboard
 
-- [ ] T153 [US7] Create dashboard page in `frontend/src/pages/dashboard/DashboardPage.tsx` rendering metrics cards, burndown chart, team activity table
-- [ ] T154 [P] [US7] Create metrics card component in `frontend/src/components/dashboard/MetricsCard.tsx` displaying task counts and completion percentage
-- [ ] T155 [US7] Create burndown chart component in `frontend/src/components/dashboard/BurndownChart.tsx` rendering chart with date range filter using Chart.js or Recharts
-- [ ] T156 [P] [US7] Create team activity component in `frontend/src/components/dashboard/TeamActivityTable.tsx` displaying member statistics with sorting
+- [X] T153 [US7] Create dashboard page in `frontend/src/pages/dashboard/DashboardPage.tsx` rendering metrics cards, burndown chart, team activity table
+- [X] T154 [P] [US7] Create metrics card component in `frontend/src/components/dashboard/MetricsCard.tsx` displaying task counts and completion percentage
+- [X] T155 [US7] Create burndown chart component in `frontend/src/components/dashboard/BurndownChart.tsx` rendering chart with date range filter using Chart.js or Recharts
+- [X] T156 [P] [US7] Create team activity component in `frontend/src/components/dashboard/TeamActivityTable.tsx` displaying member statistics with sorting
 
 ---
 
