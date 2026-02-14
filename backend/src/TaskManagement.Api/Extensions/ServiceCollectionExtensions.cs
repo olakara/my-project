@@ -25,6 +25,7 @@ using TaskManagement.Api.Features.Tasks.AddComment;
 using TaskManagement.Api.Features.Dashboard.GetProjectMetrics;
 using TaskManagement.Api.Features.Dashboard.GetBurndown;
 using TaskManagement.Api.Features.Dashboard.GetTeamActivity;
+using TaskManagement.Api.Features.Dashboard.ExportReport;
 
 namespace TaskManagement.Api.Extensions;
 
@@ -70,6 +71,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IGetProjectMetricsService, GetProjectMetricsService>();
         services.AddScoped<IGetBurndownService, GetBurndownService>();
         services.AddScoped<IGetTeamActivityService, GetTeamActivityService>();
+        services.AddScoped<IExportReportService, ExportReportService>();
 
         // Authentication
         var jwtSettings = configuration.GetSection("Jwt");

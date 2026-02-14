@@ -23,7 +23,7 @@ public static class GetBurndownEndpoint
         int projectId,
         HttpContext httpContext,
         IGetBurndownService service,
-        ILogger<GetBurndownEndpoint> logger,
+        ILogger<GetBurndownService> logger,
         DateTime? startDate = null,
         DateTime? endDate = null,
         CancellationToken ct = default)

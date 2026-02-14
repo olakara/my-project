@@ -375,13 +375,13 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Export Report Feature
 
-- [ ] T149 [US7] Create CSV export service in `backend/src/TaskManagement.Api/Features/Dashboard/ExportReport/ExportReportService.cs` generating CSV format with task data, dates, assignees
-- [ ] T150 [P] [US7] Create export report endpoint in `backend/src/TaskManagement.Api/Features/Dashboard/ExportReport/ExportReportEndpoint.cs` as GET `/api/v1/projects/{projectId}/export-report` returning 200 with CSV attachment
+- [X] T149 [US7] Create CSV export service in `backend/src/TaskManagement.Api/Features/Dashboard/ExportReport/ExportReportService.cs` generating CSV format with task data, dates, assignees
+- [X] T150 [P] [US7] Create export report endpoint in `backend/src/TaskManagement.Api/Features/Dashboard/ExportReport/ExportReportEndpoint.cs` as GET `/api/v1/projects/{projectId}/export-report` returning 200 with CSV attachment
 
 ### Dashboard Tests
 
-- [ ] T151 [US7] Create metrics tests in `backend/tests/TaskManagement.Api.Tests/Features/Dashboard/MetricsServiceTests.cs` testing metric calculations with various task scenarios
-- [ ] T152 [P] [US7] Create dashboard integration tests in `backend/tests/TaskManagement.IntegrationTests/Dashboard/DashboardIntegrationTests.cs` testing metrics, burndown, team activity queries
+- [X] T151 [US7] Create metrics tests in `backend/tests/TaskManagement.Api.Tests/Features/Dashboard/MetricsServiceTests.cs` testing metric calculations with various task scenarios
+- [X] T152 [P] [US7] Create dashboard integration tests in `backend/tests/TaskManagement.IntegrationTests/Dashboard/DashboardIntegrationTests.cs` testing metrics, burndown, team activity queries
 
 ### Frontend Dashboard
 

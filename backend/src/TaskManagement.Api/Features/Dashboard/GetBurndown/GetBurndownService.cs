@@ -4,6 +4,7 @@ using TaskManagement.Api.Data.Repositories;
 using TaskManagement.Api.Domain.Projects;
 using TaskManagement.Api.Domain.Tasks;
 using TaskManagement.Api.Domain.Users;
+using DomainTaskStatus = TaskManagement.Api.Domain.Tasks.TaskStatus;
 
 namespace TaskManagement.Api.Features.Dashboard.GetBurndown;
 
@@ -64,7 +65,7 @@ public class GetBurndownService : IGetBurndownService
             .AsNoTracking()
             .Where(history => history.Task.ProjectId == projectId
                 && history.ChangeType == TaskHistoryChangeType.StatusChanged
-                && history.NewValue == TaskStatus.Done.ToString()
+                && history.NewValue == DomainTaskStatus.Done.ToString()
                 && history.ChangedTimestamp >= start
                 && history.ChangedTimestamp < endExclusive)
             .GroupBy(history => history.ChangedTimestamp.Date)

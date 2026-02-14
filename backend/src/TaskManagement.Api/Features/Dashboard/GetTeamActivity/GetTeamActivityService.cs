@@ -4,6 +4,7 @@ using TaskManagement.Api.Data.Repositories;
 using TaskManagement.Api.Domain.Projects;
 using TaskManagement.Api.Domain.Tasks;
 using TaskManagement.Api.Domain.Users;
+using DomainTaskStatus = TaskManagement.Api.Domain.Tasks.TaskStatus;
 
 namespace TaskManagement.Api.Features.Dashboard.GetTeamActivity;
 
@@ -64,7 +65,7 @@ public class GetTeamActivityService : IGetTeamActivityService
             .AsNoTracking()
             .Where(history => history.Task.ProjectId == projectId
                 && history.ChangeType == TaskHistoryChangeType.StatusChanged
-                && history.NewValue == TaskStatus.Done.ToString())
+                && history.NewValue == DomainTaskStatus.Done.ToString())
             .GroupBy(history => history.ChangedBy)
             .Select(group => new
             {

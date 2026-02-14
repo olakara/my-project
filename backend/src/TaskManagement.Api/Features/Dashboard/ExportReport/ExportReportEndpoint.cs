@@ -1,28 +1,28 @@
 using System.Security.Claims;
 
-namespace TaskManagement.Api.Features.Dashboard.GetTeamActivity;
+namespace TaskManagement.Api.Features.Dashboard.ExportReport;
 
-public static class GetTeamActivityEndpoint
+public static class ExportReportEndpoint
 {
-    public static void MapGetTeamActivityEndpoint(this WebApplication app)
+    public static void MapExportReportEndpoint(this WebApplication app)
     {
-        app.MapGet("/api/v1/projects/{projectId}/team-activity", GetTeamActivityAsync)
-            .WithName("GetTeamActivity")
+        app.MapGet("/api/v1/projects/{projectId}/export-report", ExportReportAsync)
+            .WithName("ExportProjectReport")
             .WithOpenApi()
-            .Produces<TeamActivityResponse>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status403Forbidden)
             .Produces(StatusCodes.Status404NotFound)
             .RequireAuthorization()
-            .WithSummary("Get project team activity")
-            .WithDescription("Returns team member activity metrics sorted by completed tasks");
+            .WithSummary("Export project report")
+            .WithDescription("Returns a CSV export of project tasks");
     }
 
-    private static async System.Threading.Tasks.Task GetTeamActivityAsync(
+    private static async System.Threading.Tasks.Task ExportReportAsync(
         int projectId,
         HttpContext httpContext,
-        IGetTeamActivityService service,
-        ILogger<GetTeamActivityService> logger,
+        IExportReportService service,
+        ILogger<ExportReportService> logger,
         CancellationToken ct)
     {
         try
@@ -36,10 +36,12 @@ public static class GetTeamActivityEndpoint
                 return;
             }
 
-            var response = await service.GetTeamActivityAsync(projectId, userId, ct);
+            var result = await service.ExportReportAsync(projectId, userId, ct);
 
             httpContext.Response.StatusCode = StatusCodes.Status200OK;
-            await httpContext.Response.WriteAsJsonAsync(response, ct);
+            httpContext.Response.ContentType = result.ContentType;
+            httpContext.Response.Headers.Append("Content-Disposition", $"attachment; filename=\"{result.FileName}\"");
+            await httpContext.Response.WriteAsync(result.Content, ct);
         }
         catch (KeyNotFoundException ex)
         {
@@ -49,13 +51,13 @@ public static class GetTeamActivityEndpoint
         }
         catch (UnauthorizedAccessException ex)
         {
-            logger.LogWarning("Unauthorized access to team activity for project {ProjectId}", projectId);
+            logger.LogWarning("Unauthorized access to export report for project {ProjectId}", projectId);
             httpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
             await httpContext.Response.WriteAsJsonAsync(new { message = ex.Message }, CancellationToken.None);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error retrieving team activity for project {ProjectId}", projectId);
+            logger.LogError(ex, "Error exporting report for project {ProjectId}", projectId);
             httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
             await httpContext.Response.WriteAsJsonAsync(new { message = "Internal server error" }, CancellationToken.None);
         }
