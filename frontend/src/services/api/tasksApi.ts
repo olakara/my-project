@@ -1,4 +1,5 @@
-import axios, { AxiosInstance } from 'axios';
+import type { AxiosInstance } from 'axios';
+import apiClient from './apiClient';
 import {
   Task,
   TaskDetail,
@@ -10,24 +11,11 @@ import {
   TaskStatus,
 } from '../../types/task.types';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5257/api/v1';
-
 class TasksApiClient {
   private axiosInstance: AxiosInstance;
 
   constructor() {
-    this.axiosInstance = axios.create({
-      baseURL: API_BASE_URL,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    // Add auth token from localStorage if available
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      this.axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    }
+    this.axiosInstance = apiClient;
   }
 
   // Create task
@@ -179,17 +167,6 @@ class TasksApiClient {
     return response.data;
   }
 
-  // Set auth token for API requests
-  setAuthToken(token: string): void {
-    this.axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    localStorage.setItem('authToken', token);
-  }
-
-  // Remove auth token
-  removeAuthToken(): void {
-    delete this.axiosInstance.defaults.headers.common['Authorization'];
-    localStorage.removeItem('authToken');
-  }
 }
 
 export const tasksApiClient = new TasksApiClient();
