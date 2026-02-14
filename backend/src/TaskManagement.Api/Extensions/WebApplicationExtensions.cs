@@ -12,7 +12,16 @@ using TaskManagement.Api.Features.Projects.RemoveMember;
 using TaskManagement.Api.Features.Projects.AcceptInvitation;
 using TaskManagement.Api.Features.Tasks.CreateTask;
 using TaskManagement.Api.Features.Tasks.GetTask;
+using TaskManagement.Api.Features.Tasks.GetMyTasks;
 using TaskManagement.Api.Features.Tasks.UpdateTask;
+using TaskManagement.Api.Features.Tasks.UpdateTaskStatus;
+using TaskManagement.Api.Features.Tasks.AssignTask;
+using TaskManagement.Api.Features.Tasks.AddComment;
+using TaskManagement.Api.Features.Dashboard.GetProjectMetrics;
+using TaskManagement.Api.Features.Dashboard.GetBurndown;
+using TaskManagement.Api.Features.Dashboard.GetTeamActivity;
+using TaskManagement.Api.Features.Dashboard.ExportReport;
+using TaskManagement.Api.Hubs;
 
 namespace TaskManagement.Api.Extensions;
 
@@ -31,9 +40,6 @@ public static class WebApplicationExtensions
         {
             app.UseHttpsRedirection();
         }
-
-        // CORS
-        app.UseCors("AllowFrontend");
 
         // Authentication & Authorization
         app.UseAuthentication();
@@ -69,7 +75,18 @@ public static class WebApplicationExtensions
         app.MapAcceptInvitationEndpoint();
         app.MapCreateTaskEndpoint();
         app.MapGetTaskEndpoint();
+        app.MapGetMyTasksEndpoint();
         app.MapUpdateTaskEndpoint();
+        app.MapUpdateTaskStatusEndpoint();
+        app.MapAssignTaskEndpoint();
+        app.MapAddCommentEndpoint();
+        app.MapGetProjectMetricsEndpoint();
+        app.MapGetBurndownEndpoint();
+        app.MapGetTeamActivityEndpoint();
+        app.MapExportReportEndpoint();
+
+        // SignalR hub
+        app.MapHub<TaskManagementHub>("/hubs/taskmanagement");
 
         return app;
     }

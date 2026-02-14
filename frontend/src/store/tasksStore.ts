@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { Task, TaskFilter, TasksState, TaskStatus } from '../types/task.types';
 import tasksApiClient from '../services/api/tasksApi';
+import { signalRService } from '../services/signalr/signalrService';
 
 interface TasksStore extends TasksState {
   // Actions
@@ -13,6 +14,14 @@ interface TasksStore extends TasksState {
   assignTask: (taskId: number, assigneeId: string) => Promise<Task>;
   deleteTask: (taskId: number) => Promise<void>;
   addComment: (taskId: number, content: string) => Promise<void>;
+  
+  // Real-time sync
+  initializeRealtimeListeners: (projectId: number) => void;
+  cleanupRealtimeListeners: () => void;
+  handleTaskCreated: (task: Task) => void;
+  handleTaskUpdated: (task: Task) => void;
+  handleTaskStatusChanged: (taskId: number, newStatus: TaskStatus) => void;
+  handleCommentAdded: (taskId: number, comment: any) => void;
   
   // Filter management
   setFilter: (filter: Partial<TaskFilter>) => void;
@@ -183,5 +192,83 @@ export const useTasksStore = create<TasksStore>((set, get) => ({
 
   clearError: () => {
     set({ error: undefined });
+  },
+
+  // Real-time sync handlers
+  initializeRealtimeListeners: (projectId: number) => {
+    // Listen for new tasks
+    signalRService.onEvent('TaskCreated', (task: Task) => {
+      if (task.projectId === projectId) {
+        get().handleTaskCreated(task);
+      }
+    });
+
+    // Listen for task updates
+    signalRService.onEvent('TaskUpdated', (task: Task) => {
+      if (task.projectId === projectId) {
+        get().handleTaskUpdated(task);
+      }
+    });
+
+    // Listen for task status changes
+    signalRService.onEvent('TaskStatusChanged', (data: { taskId: number; newStatus: TaskStatus }) => {
+      get().handleTaskStatusChanged(data.taskId, data.newStatus);
+    });
+
+    // Listen for comments
+    signalRService.onEvent('CommentAdded', (data: { taskId: number; comment: any }) => {
+      get().handleCommentAdded(data.taskId, data.comment);
+    });
+
+    // Listen for task deletions
+    signalRService.onEvent('TaskDeleted', (data: { taskId: number }) => {
+      const state = get();
+      set({
+        tasks: state.tasks.filter(t => t.id !== data.taskId),
+        selectedTask: state.selectedTask?.id === data.taskId ? undefined : state.selectedTask,
+      });
+    });
+  },
+
+  cleanupRealtimeListeners: () => {
+    // Unsubscribe all real-time listeners
+    signalRService.onEvent('TaskCreated', () => {}); // No-op to cleanup
+  },
+
+  handleTaskCreated: (task: Task) => {
+    const state = get();
+    set({ tasks: [task, ...state.tasks] });
+  },
+
+  handleTaskUpdated: (task: Task) => {
+    const state = get();
+    set({
+      tasks: state.tasks.map(t => t.id === task.id ? task : t),
+      selectedTask: state.selectedTask?.id === task.id ? task : state.selectedTask,
+    });
+  },
+
+  handleTaskStatusChanged: (taskId: number, newStatus: TaskStatus) => {
+    const state = get();
+    const updatedTask = state.tasks.find(t => t.id === taskId);
+    if (updatedTask) {
+      const task = { ...updatedTask, status: newStatus };
+      set({
+        tasks: state.tasks.map(t => t.id === taskId ? task : t),
+        selectedTask: state.selectedTask?.id === taskId ? task : state.selectedTask,
+      });
+    }
+  },
+
+  handleCommentAdded: (taskId: number, _comment: any) => {
+    const state = get();
+    const task = state.tasks.find(t => t.id === taskId);
+    if (task) {
+      const updatedTask = { ...task, commentCount: (task.commentCount || 0) + 1 };
+      set({
+        tasks: state.tasks.map(t => t.id === taskId ? updatedTask : t),
+        selectedTask: state.selectedTask?.id === taskId ? updatedTask : state.selectedTask,
+      });
+    }
   },
 }));

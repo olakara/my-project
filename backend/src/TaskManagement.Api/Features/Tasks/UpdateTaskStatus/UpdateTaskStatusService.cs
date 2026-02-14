@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using TaskManagement.Api.Data;
 using TaskManagement.Api.Data.Repositories;
 using TaskManagement.Api.Domain.Projects;
 using TaskManagement.Api.Domain.Tasks;
+using TaskManagement.Api.Hubs;
 using DomainTask = TaskManagement.Api.Domain.Tasks.Task;
 using DomainTaskStatus = TaskManagement.Api.Domain.Tasks.TaskStatus;
 
@@ -22,17 +24,20 @@ public class UpdateTaskStatusService : IUpdateTaskStatusService
     private readonly TaskManagementDbContext _context;
     private readonly ITaskRepository _taskRepository;
     private readonly IProjectRepository _projectRepository;
+    private readonly IHubContext<TaskManagementHub> _hubContext;
     private readonly ILogger<UpdateTaskStatusService> _logger;
 
     public UpdateTaskStatusService(
         TaskManagementDbContext context,
         ITaskRepository taskRepository,
         IProjectRepository projectRepository,
+        IHubContext<TaskManagementHub> hubContext,
         ILogger<UpdateTaskStatusService> logger)
     {
         _context = context;
         _taskRepository = taskRepository;
         _projectRepository = projectRepository;
+        _hubContext = hubContext;
         _logger = logger;
     }
 
@@ -93,8 +98,22 @@ public class UpdateTaskStatusService : IUpdateTaskStatusService
             "Task {TaskId} status changed from {OldStatus} to {NewStatus} by user {UserId}",
             taskId, oldStatus, request.NewStatus, userId);
 
-        // TODO: Broadcast update via SignalR hub
-        // await _signalRHub.BroadcastTaskStatusChanged(project.Id, task);
+        // Broadcast status change to all project members via SignalR
+        if (_hubContext.Clients != null)
+        {
+            await _hubContext.Clients.Group($"project-{project.Id}").SendAsync("TaskStatusChanged", new
+            {
+                id = task.Id,
+                projectId = task.ProjectId,
+                title = task.Title,
+                oldStatus = oldStatus.ToString(),
+                newStatus = request.NewStatus.ToString(),
+                changedBy = userId,
+                updatedTimestamp = task.UpdatedTimestamp
+            }, ct);
+
+            _logger.LogDebug("Task {TaskId} status change broadcasted to project {ProjectId} members", taskId, project.Id);
+        }
 
         return BuildResponse(task);
     }

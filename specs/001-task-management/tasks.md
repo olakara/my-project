@@ -283,26 +283,26 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Assign Task Feature
 
-- [ ] T116 [US4] Create assign task DTOs in `backend/src/TaskManagement.Api/Features/Tasks/AssignTask/AssignTaskRequest.cs` with assigneeId
-- [ ] T117 [US4] Create assign validator in `backend/src/TaskManagement.Api/Features/Tasks/AssignTask/AssignTaskValidator.cs` validating assignee is project member, authorization
-- [ ] T118 [P] [US4] Create assign service in `backend/src/TaskManagement.Api/Features/Tasks/AssignTask/AssignTaskService.cs` updating assignee, recording history, creating notification, broadcasting update
-- [ ] T119 [US4] Create assign endpoint in `backend/src/TaskManagement.Api/Features/Tasks/AssignTask/AssignTaskEndpoint.cs` as PATCH `/api/v1/tasks/{taskId}/assign` requiring [Authorize] returning 200
+- [X] T116 [US4] Create assign task DTOs in `backend/src/TaskManagement.Api/Features/Tasks/AssignTask/AssignTaskRequest.cs` with assigneeId
+- [X] T117 [US4] Create assign validator in `backend/src/TaskManagement.Api/Features/Tasks/AssignTask/AssignTaskValidator.cs` validating assignee is project member, authorization
+- [X] T118 [P] [US4] Create assign service in `backend/src/TaskManagement.Api/Features/Tasks/AssignTask/AssignTaskService.cs` updating assignee, recording history, creating notification, broadcasting update
+- [X] T119 [US4] Create assign endpoint in `backend/src/TaskManagement.Api/Features/Tasks/AssignTask/AssignTaskEndpoint.cs` as PATCH `/api/v1/tasks/{taskId}/assign` requiring [Authorize] returning 200
 
 ### Get My Tasks Feature
 
-- [ ] T120 [P] [US4] Create get my tasks service in `backend/src/TaskManagement.Api/Features/Tasks/GetMyTasks/GetMyTasksService.cs` querying all tasks assigned to current user with optional filters
-- [ ] T121 [US4] Create get my tasks endpoint in `backend/src/TaskManagement.Api/Features/Tasks/GetMyTasks/GetMyTasksEndpoint.cs` as GET `/api/v1/tasks/my-tasks` requiring [Authorize] returning 200
+- [X] T120 [P] [US4] Create get my tasks service in `backend/src/TaskManagement.Api/Features/Tasks/GetMyTasks/GetMyTasksService.cs` querying all tasks assigned to current user with optional filters
+- [X] T121 [US4] Create get my tasks endpoint in `backend/src/TaskManagement.Api/Features/Tasks/GetMyTasks/GetMyTasksEndpoint.cs` as GET `/api/v1/tasks/my-tasks` requiring [Authorize] returning 200
 
 ### Assignment Tests
 
-- [ ] T122 [US4] Create assignment tests in `backend/tests/TaskManagement.Api.Tests/Features/Tasks/AssignmentServiceTests.cs` testing assignment, history recording, authorization
-- [ ] T123 [P] [US4] Create my tasks integration tests in `backend/tests/TaskManagement.IntegrationTests/Tasks/MyTasksIntegrationTests.cs` testing assignment flow and my tasks query
+- [X] T122 [US4] Create assignment tests in `backend/tests/TaskManagement.Api.Tests/Features/Tasks/AssignmentServiceTests.cs` testing assignment, history recording, authorization
+- [X] T123 [P] [US4] Create my tasks integration tests in `backend/tests/TaskManagement.IntegrationTests/Tasks/MyTasksIntegrationTests.cs` testing assignment flow and my tasks query
 
 ### Frontend Assignment
 
-- [ ] T124 [US4] Create assignee selector component in `frontend/src/components/tasks/AssigneeSelector.tsx` showing project members dropdown, handling assignment changes
-- [ ] T125 [P] [US4] Create my tasks page in `frontend/src/pages/tasks/MyTasksPage.tsx` displaying tasks assigned to current user with filters and status grouping
-- [ ] T126 [US4] Create useMyTasks hook in `frontend/src/hooks/useMyTasks.ts` wrapping React Query for my tasks queries with real-time updates
+- [X] T124 [US4] Create assignee selector component in `frontend/src/components/tasks/AssigneeSelector.tsx` showing project members dropdown, handling assignment changes
+- [X] T125 [P] [US4] Create my tasks page in `frontend/src/pages/tasks/MyTasksPage.tsx` displaying tasks assigned to current user with filters and status grouping
+- [X] T126 [US4] Create useMyTasks hook in `frontend/src/hooks/useMyTasks.ts` wrapping React Query for my tasks queries with real-time updates
 
 ---
 
@@ -319,31 +319,31 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### SignalR Hub Setup
 
-- [ ] T127 [P] [US5] Create TaskManagementHub in `backend/src/TaskManagement.Api/Hubs/TaskManagementHub.cs` with methods: JoinProject(projectId), LeaveProject(projectId), SendTaskUpdate(), SendCommentAdded(), SendUserConnected(), SendUserDisconnected()
-- [ ] T128 [US5] Configure SignalR in `backend/src/TaskManagement.Api/Program.cs` with JWT authentication, CORS settings, hub routing, optional Redis backplane for scaling
-- [ ] T129 [P] [US5] Create SignalR event mappings in hub to broadcast updates to project group: TaskStatusChanged → broadcast to group, CommentAdded → broadcast to group, TaskCreated → broadcast to group
+- [X] T127 [P] [US5] Create TaskManagementHub in `backend/src/TaskManagement.Api/Hubs/TaskManagementHub.cs` with methods: JoinProject(projectId), LeaveProject(projectId), SendTaskUpdate(), SendCommentAdded(), SendUserConnected(), SendUserDisconnected()
+- [X] T128 [US5] Configure SignalR in `backend/src/TaskManagement.Api/Program.cs` with JWT authentication, CORS settings, hub routing, optional Redis backplane for scaling
+- [X] T129 [P] [US5] Create SignalR event mappings in hub to broadcast updates to project group: TaskStatusChanged → broadcast to group, CommentAdded → broadcast to group, TaskCreated → broadcast to group
 
 ### Backend Real-Time Publishing
 
-- [ ] T130 [US5] Integrate SignalR hub injection into task services: CreateTaskService broadcasts TaskCreated event
-- [ ] T131 [P] [US5] Update UpdateTaskStatusService to broadcast TaskStatusChanged event to project group
-- [ ] T132 [US5] Update AssignTaskService to broadcast TaskAssigned event
-- [ ] T133 [P] [US5] Create comment service in `backend/src/TaskManagement.Api/Features/Tasks/AddComment/AddCommentService.cs` with SignalR broadcast of CommentAdded event
+- [X] T130 [US5] Integrate SignalR hub injection into task services: CreateTaskService broadcasts TaskCreated event
+- [X] T131 [P] [US5] Update UpdateTaskStatusService to broadcast TaskStatusChanged event to project group
+- [X] T132 [US5] Update AssignTaskService to broadcast TaskAssigned event
+- [X] T133 [P] [US5] Create comment service in `backend/src/TaskManagement.Api/Features/Tasks/AddComment/AddCommentService.cs` with SignalR broadcast of CommentAdded event
 
 ### Add Comment Feature
 
-- [ ] T134 [US5] Create comment DTOs in `backend/src/TaskManagement.Api/Features/Tasks/AddComment/AddCommentRequest.cs` and `AddCommentResponse.cs` with content
-- [ ] T135 [US5] Create comment validator in `backend/src/TaskManagement.Api/Features/Tasks/AddComment/CommentValidator.cs` validating content length (1-5000 chars)
-- [ ] T136 [P] [US5] Create add comment endpoint in `backend/src/TaskManagement.Api/Features/Tasks/AddComment/AddCommentEndpoint.cs` as POST `/api/v1/tasks/{taskId}/comments` requiring [Authorize] returning 201
+- [X] T134 [US5] Create comment DTOs in `backend/src/TaskManagement.Api/Features/Tasks/AddComment/AddCommentRequest.cs` and `AddCommentResponse.cs` with content
+- [X] T135 [US5] Create comment validator in `backend/src/TaskManagement.Api/Features/Tasks/AddComment/CommentValidator.cs` validating content length (1-5000 chars)
+- [X] T136 [P] [US5] Create add comment endpoint in `backend/src/TaskManagement.Api/Features/Tasks/AddComment/AddCommentEndpoint.cs` as POST `/api/v1/tasks/{taskId}/comments` requiring [Authorize] returning 201
 
 ### Frontend SignalR Integration
 
-- [ ] T137 [US5] Create SignalR service in `frontend/src/services/signalr/signalrService.ts` managing hub connection, authentication, reconnection logic, event subscriptions
-- [ ] T138 [P] [US5] Create useRealtime hook in `frontend/src/hooks/useRealtime.ts` providing real-time event subscriptions to components with automatic cleanup
-- [ ] T139 [US5] Integrate SignalR event handlers into tasks store: listen for TaskStatusChanged, TaskCreated, CommentAdded events and update local state
-- [ ] T140 [P] [US5] Update kanban board component to listen to real-time events and optimistically update UI before server confirmation
-- [ ] T141 [US5] Create offline sync service in `frontend/src/services/api/offlineSync.ts` queuing mutations when offline, syncing when connection restored
-- [ ] T142 [US5] Add connection status indicator component in `frontend/src/components/ui/ConnectionStatus.tsx` showing online/offline/connecting state with visual feedback
+- [X] T137 [US5] Create SignalR service in `frontend/src/services/signalr/signalrService.ts` managing hub connection, authentication, reconnection logic, event subscriptions
+- [X] T138 [P] [US5] Create useRealtime hook in `frontend/src/hooks/useRealtime.ts` providing real-time event subscriptions to components with automatic cleanup
+- [X] T139 [US5] Integrate SignalR event handlers into tasks store: listen for TaskStatusChanged, TaskCreated, CommentAdded events and update local state
+- [X] T140 [P] [US5] Update kanban board component to listen to real-time events and optimistically update UI before server confirmation
+- [X] T141 [US5] Create offline sync service in `frontend/src/services/api/offlineSync.ts` queuing mutations when offline, syncing when connection restored
+- [X] T142 [US5] Add connection status indicator component in `frontend/src/components/ui/ConnectionStatus.tsx` showing online/offline/connecting state with visual feedback
 
 ---
 
@@ -360,35 +360,35 @@ This document contains all implementation tasks organized by phase and user stor
 
 ### Get Project Metrics Feature
 
-- [ ] T143 [P] [US7] Create metrics service in `backend/src/TaskManagement.Api/Features/Dashboard/GetProjectMetrics/GetProjectMetricsService.cs` calculating task counts by status, completion percentage, team member statistics
-- [ ] T144 [US7] Create metrics endpoint in `backend/src/TaskManagement.Api/Features/Dashboard/GetProjectMetrics/GetProjectMetricsEndpoint.cs` as GET `/api/v1/projects/{projectId}/metrics` requiring [Authorize] returning 200
+- [X] T143 [P] [US7] Create metrics service in `backend/src/TaskManagement.Api/Features/Dashboard/GetProjectMetrics/GetProjectMetricsService.cs` calculating task counts by status, completion percentage, team member statistics
+- [X] T144 [US7] Create metrics endpoint in `backend/src/TaskManagement.Api/Features/Dashboard/GetProjectMetrics/GetProjectMetricsEndpoint.cs` as GET `/api/v1/projects/{projectId}/metrics` requiring [Authorize] returning 200
 
 ### Get Burndown Chart Feature
 
-- [ ] T145 [US7] Create burndown service in `backend/src/TaskManagement.Api/Features/Dashboard/GetBurndown/GetBurndownService.cs` calculating tasks completed per day from task history records, aggregating by date
-- [ ] T146 [P] [US7] Create burndown endpoint in `backend/src/TaskManagement.Api/Features/Dashboard/GetBurndown/GetBurndownEndpoint.cs` as GET `/api/v1/projects/{projectId}/burndown` with date range query params returning 200
+- [X] T145 [US7] Create burndown service in `backend/src/TaskManagement.Api/Features/Dashboard/GetBurndown/GetBurndownService.cs` calculating tasks completed per day from task history records, aggregating by date
+- [X] T146 [P] [US7] Create burndown endpoint in `backend/src/TaskManagement.Api/Features/Dashboard/GetBurndown/GetBurndownEndpoint.cs` as GET `/api/v1/projects/{projectId}/burndown` with date range query params returning 200
 
 ### Get Team Activity Feature
 
-- [ ] T147 [US7] Create team activity service in `backend/src/TaskManagement.Api/Features/Dashboard/GetTeamActivity/GetTeamActivityService.cs` aggregating task statistics by team member, sorting by completion count
-- [ ] T148 [P] [US7] Create team activity endpoint in `backend/src/TaskManagement.Api/Features/Dashboard/GetTeamActivity/GetTeamActivityEndpoint.cs` as GET `/api/v1/projects/{projectId}/team-activity` requiring [Authorize] returning 200
+- [X] T147 [US7] Create team activity service in `backend/src/TaskManagement.Api/Features/Dashboard/GetTeamActivity/GetTeamActivityService.cs` aggregating task statistics by team member, sorting by completion count
+- [X] T148 [P] [US7] Create team activity endpoint in `backend/src/TaskManagement.Api/Features/Dashboard/GetTeamActivity/GetTeamActivityEndpoint.cs` as GET `/api/v1/projects/{projectId}/team-activity` requiring [Authorize] returning 200
 
 ### Export Report Feature
 
-- [ ] T149 [US7] Create CSV export service in `backend/src/TaskManagement.Api/Features/Dashboard/ExportReport/ExportReportService.cs` generating CSV format with task data, dates, assignees
-- [ ] T150 [P] [US7] Create export report endpoint in `backend/src/TaskManagement.Api/Features/Dashboard/ExportReport/ExportReportEndpoint.cs` as GET `/api/v1/projects/{projectId}/export-report` returning 200 with CSV attachment
+- [X] T149 [US7] Create CSV export service in `backend/src/TaskManagement.Api/Features/Dashboard/ExportReport/ExportReportService.cs` generating CSV format with task data, dates, assignees
+- [X] T150 [P] [US7] Create export report endpoint in `backend/src/TaskManagement.Api/Features/Dashboard/ExportReport/ExportReportEndpoint.cs` as GET `/api/v1/projects/{projectId}/export-report` returning 200 with CSV attachment
 
 ### Dashboard Tests
 
-- [ ] T151 [US7] Create metrics tests in `backend/tests/TaskManagement.Api.Tests/Features/Dashboard/MetricsServiceTests.cs` testing metric calculations with various task scenarios
-- [ ] T152 [P] [US7] Create dashboard integration tests in `backend/tests/TaskManagement.IntegrationTests/Dashboard/DashboardIntegrationTests.cs` testing metrics, burndown, team activity queries
+- [X] T151 [US7] Create metrics tests in `backend/tests/TaskManagement.Api.Tests/Features/Dashboard/MetricsServiceTests.cs` testing metric calculations with various task scenarios
+- [X] T152 [P] [US7] Create dashboard integration tests in `backend/tests/TaskManagement.IntegrationTests/Dashboard/DashboardIntegrationTests.cs` testing metrics, burndown, team activity queries
 
 ### Frontend Dashboard
 
-- [ ] T153 [US7] Create dashboard page in `frontend/src/pages/dashboard/DashboardPage.tsx` rendering metrics cards, burndown chart, team activity table
-- [ ] T154 [P] [US7] Create metrics card component in `frontend/src/components/dashboard/MetricsCard.tsx` displaying task counts and completion percentage
-- [ ] T155 [US7] Create burndown chart component in `frontend/src/components/dashboard/BurndownChart.tsx` rendering chart with date range filter using Chart.js or Recharts
-- [ ] T156 [P] [US7] Create team activity component in `frontend/src/components/dashboard/TeamActivityTable.tsx` displaying member statistics with sorting
+- [X] T153 [US7] Create dashboard page in `frontend/src/pages/dashboard/DashboardPage.tsx` rendering metrics cards, burndown chart, team activity table
+- [X] T154 [P] [US7] Create metrics card component in `frontend/src/components/dashboard/MetricsCard.tsx` displaying task counts and completion percentage
+- [X] T155 [US7] Create burndown chart component in `frontend/src/components/dashboard/BurndownChart.tsx` rendering chart with date range filter using Chart.js or Recharts
+- [X] T156 [P] [US7] Create team activity component in `frontend/src/components/dashboard/TeamActivityTable.tsx` displaying member statistics with sorting
 
 ---
 

@@ -3,11 +3,11 @@ using TaskManagement.Api.Domain.Tasks;
 
 namespace TaskManagement.Api.Features.Tasks.UpdateTaskStatus;
 
-public class UpdateTaskStatusEndpoint
+public static class UpdateTaskStatusEndpoint
 {
-    public static void MapUpdateTaskStatus(WebApplication app)
+    public static IEndpointRouteBuilder MapUpdateTaskStatusEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        app.MapPatch("/api/v1/tasks/{taskId}/status", UpdateTaskStatus)
+        endpoints.MapPatch("/api/v1/tasks/{taskId}/status", UpdateTaskStatus)
             .WithName("UpdateTaskStatus")
             .WithOpenApi()
             .Produces<UpdateTaskStatusResponse>(StatusCodes.Status200OK)
@@ -17,6 +17,8 @@ public class UpdateTaskStatusEndpoint
             .Produces(StatusCodes.Status404NotFound)
             .RequireAuthorization()
             .WithDescription("Update the status of a task (e.g., drag-drop on Kanban board)");
+
+        return endpoints;
     }
 
     private static async System.Threading.Tasks.Task UpdateTaskStatus(
@@ -25,7 +27,7 @@ public class UpdateTaskStatusEndpoint
         IUpdateTaskStatusService service,
         IValidator<UpdateTaskStatusRequest> validator,
         UpdateTaskStatusRequest request,
-        ILogger<UpdateTaskStatusEndpoint> logger,
+        ILogger<UpdateTaskStatusResponse> logger,
         CancellationToken ct = default)
     {
         try

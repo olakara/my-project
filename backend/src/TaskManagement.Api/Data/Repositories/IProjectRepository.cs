@@ -10,4 +10,5 @@ public interface IProjectRepository
     Task<Project> CreateAsync(Project project, CancellationToken ct = default);
     Task UpdateAsync(Project project, CancellationToken ct = default);
     Task DeleteAsync(int id, CancellationToken ct = default);
+    Task<bool> IsUserMemberOfProjectAsync(int projectId, string userId, CancellationToken ct = default);
 }

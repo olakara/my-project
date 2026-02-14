@@ -1,0 +1,99 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "dotnet build",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"build"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "dotnet test (backend)",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"test",
+				"backend"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "test"
+		},
+		{
+			"label": "dotnet test",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"test"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "test"
+		},
+		{
+			"label": "dotnet test (solution)",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"test",
+				"my-project.sln"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "test"
+		},
+		{
+			"label": "dotnet test (solution)",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"test",
+				"my-project.sln"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "test"
+		},
+		{
+			"label": "dotnet test (solution)",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"test",
+				"my-project.sln"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "test"
+		},
+		{
+			"label": "dotnet test (solution)",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"test",
+				"my-project.sln"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "test"
+		},
+		{
+			"label": "dotnet test (solution)",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"test",
+				"my-project.sln"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "test"
+		}
+	]
+}
